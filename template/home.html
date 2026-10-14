@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+{% block meta_description %}Start your educational journey with quality programs, experienced faculty, and a supportive campus community. Apply for admission today.{% endblock %}
+
+{% block content %}
+<section class="home-hero" aria-labelledby="home-hero-title">
+    <div class="home-hero-content">
+        <span class="home-eyebrow">YOUR FUTURE STARTS HERE</span>
+        <h1 id="home-hero-title">Start Your Educational Journey With Us</h1>
+        <p>Apply online for admission and take the first step toward a successful future.</p>
+        {% if user.is_authenticated %}
+        <div class="home-portal-gate-badge">
+            <span class="portal-badge-text">Signed in as <strong>{{ request.user.get_full_name|default:request.user.get_username }}</strong></span>
+        </div>
+        <div class="home-hero-actions">
+            <a class="home-button home-button-primary" href="{% url 'student_profile' %}">My Profile <span aria-hidden="true">&rarr;</span></a>
+            <a class="home-button home-button-outline" href="{% url 'admission_dashboard' %}">Application Status</a>
+            <a class="home-button home-button-outline" href="{% url 'admission_application' %}">Apply Now <span aria-hidden="true">&rarr;</span></a>
+            <a class="home-button home-button-outline" href="{% url 'courses' %}">Explore Courses</a>
+        </div>
+        {% else %}
+        <div class="home-portal-gate-badge">
+            <span class="portal-badge-text">Student Portal Access: Select <strong>Login</strong> or <strong>Register</strong> to begin</span>
+        </div>
+        <div class="home-hero-actions">
+            <a class="home-button home-button-primary" href="{% url 'login' %}">Student Login <span aria-hidden="true">&rarr;</span></a>
+            <a class="home-button home-button-outline" href="{% url 'register' %}">Create New Account</a>
+            <a class="home-button home-button-outline" href="{% url 'admission_application' %}">Apply Now <span aria-hidden="true">&rarr;</span></a>
+            <a class="home-button home-button-outline" href="{% url 'courses' %}">Explore Courses</a>
+        </div>
+        {% endif %}
+    </div>
+    <div class="home-hero-art" aria-hidden="true">
+        <svg viewBox="0 0 520 430" role="presentation">
+            <circle class="campus-sun" cx="375" cy="92" r="47"/>
+            <circle class="campus-orbit" cx="278" cy="225" r="178"/>
+            <path class="campus-ground" d="M22 352c83-51 167-54 250-12s155 39 226-2v92H22v-78Z"/>
+            <path class="campus-side" d="M109 184h303v172H109z"/>
+            <path class="campus-roof" d="m80 185 180-105 181 105H80Z"/>
+            <path class="campus-pediment" d="M190 178h140l-70-49-70 49Z"/>
+            <path class="campus-column" d="M134 211h25v114h-25zm62 0h25v114h-25zm62 0h25v114h-25zm62 0h25v114h-25zm62 0h25v114h-25z"/>
+            <path class="campus-base" d="M91 327h339v16H91zm-19 17h377v15H72z"/>
+            <path class="campus-door" d="M229 279a31 31 0 0 1 62 0v48h-62v-48Z"/>
+            <path class="campus-tree" d="M58 329c-20-38-9-71 12-93 26 25 31 56 12 93H58Zm-15 10h61v9H43z"/>
+            <path class="campus-tree" d="M407 319c-20-38-9-71 12-93 26 25 31 56 12 93h-24Zm-15 10h61v9h-61z"/>
+            <rect class="campus-window" x="170" y="228" width="12" height="31" rx="6"/>
+            <rect class="campus-window" x="232" y="228" width="12" height="31" rx="6"/>
+            <rect class="campus-window" x="276" y="228" width="12" height="31" rx="6"/>
+            <rect class="campus-window" x="338" y="228" width="12" height="31" rx="6"/>
+        </svg>
+    </div>
+</section>
+
+<section class="home-welcome home-container" aria-labelledby="welcome-title">
+    <div class="home-welcome-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none">
+            <path d="M8 25 32 12l24 13v4H8v-4Z" fill="currentColor"/>
+            <path d="M13 33h7v17h-7V33Zm16 0h7v17h-7V33Zm16 0h7v17h-7V33ZM8 53h48v4H8v-4Z" fill="currentColor"/>
+        </svg>
+    </div>
+    <div class="home-welcome-copy">
+        <span class="home-section-kicker">A PLACE TO LEARN AND GROW</span>
+        <h2 id="welcome-title">Welcome to Our Institution</h2>
+        <p>We provide quality education through experienced faculty, modern facilities, and career-focused programs. Discover a supportive learning community that helps you build practical skills and prepare for the opportunities ahead.</p>
+        <a class="home-text-link" href="{% url 'about' %}">Learn More <span aria-hidden="true">&rarr;</span></a>
+    </div>
+</section>
+
+<section class="home-courses-section">
+    <div class="home-container">
+        <div class="home-section-heading">
+            <div>
+                <span class="home-section-kicker">FIND YOUR PATH</span>
+                <h2>Popular Courses</h2>
+            </div>
+            <p>Explore programs designed to help you develop knowledge, confidence, and practical skills.</p>
+        </div>
+
+        <div class="home-course-grid">
+            <article class="home-course-card">
+                <div class="home-course-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none"><rect x="7" y="9" width="34" height="25" rx="3" stroke="currentColor" stroke-width="3"/><path d="M17 40h14M24 34v6M15 18h18M15 24h11" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                </div>
+                <span class="home-course-category">COMPUTING</span>
+                <h3>BCA</h3>
+                <p>Bachelor of Computer Applications</p>
+                <div class="home-course-footer"><span>Duration: 3 years</span><a href="{% url 'courses' %}">View Details <span aria-hidden="true">&rarr;</span></a></div>
+            </article>
+
+            <article class="home-course-card">
+                <div class="home-course-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none"><path d="M7 18 24 9l17 9-17 9-17-9Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M14 23v9c6 5 14 5 20 0v-9M41 19v12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="41" cy="35" r="2" fill="currentColor"/></svg>
+                </div>
+                <span class="home-course-category">COMMERCE</span>
+                <h3>B.Com</h3>
+                <p>Bachelor of Commerce</p>
+                <div class="home-course-footer"><span>Duration: 3 years</span><a href="{% url 'courses' %}">View Details <span aria-hidden="true">&rarr;</span></a></div>
+            </article>
+
+            <article class="home-course-card">
+                <div class="home-course-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none"><path d="M10 38h28M14 33l7-18h6l7 18M18 25h12M24 9v6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="24" cy="7" r="2" fill="currentColor"/></svg>
+                </div>
+                <span class="home-course-category">SCIENCE</span>
+                <h3>B.Sc Computer Science</h3>
+                <p>Bachelor of Science in Computer Science</p>
+                <div class="home-course-footer"><span>Duration: 3 years</span><a href="{% url 'courses' %}">View Details <span aria-hidden="true">&rarr;</span></a></div>
+            </article>
+
+            <article class="home-course-card">
+                <div class="home-course-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none"><path d="M12 8h18l7 7v25H12V8Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M29 8v9h8M18 25h13M18 31h13" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                </div>
+                <span class="home-course-category">PROFESSIONAL</span>
+                <h3>Diploma</h3>
+                <p>Professional Diploma Programs</p>
+                <div class="home-course-footer"><span>Duration: 1-2 years</span><a href="{% url 'courses' %}">View Details <span aria-hidden="true">&rarr;</span></a></div>
+            </article>
+        </div>
+
+        <div class="home-centered-action">
+            <a class="home-button home-button-blue-outline" href="{% url 'courses' %}">View All Courses <span aria-hidden="true">&rarr;</span></a>
+        </div>
+    </div>
+</section>
+
+<section class="home-why home-container" aria-labelledby="why-title">
+    <div class="home-section-heading home-section-heading-centered">
+        <div>
+            <span class="home-section-kicker">THE RIGHT PLACE TO THRIVE</span>
+            <h2 id="why-title">Why Choose Us</h2>
+        </div>
+        <p>Everything you need to learn with confidence and take your next step.</p>
+    </div>
+    <div class="home-benefits-grid">
+        <article class="home-benefit">
+            <span class="home-benefit-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="15" r="8" stroke="currentColor" stroke-width="3"/><path d="M9 40c1-8 6-12 15-12s14 4 15 12M8 18l3 3 5-6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <h3>Experienced Faculty</h3>
+            <p>Learn from dedicated educators who bring knowledge and real-world experience to the classroom.</p>
+        </article>
+        <article class="home-benefit">
+            <span class="home-benefit-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M7 40h34M11 40V19l13-9 13 9v21M18 40V27h12v13M17 20h.1M24 20h.1M31 20h.1" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <h3>Modern Infrastructure</h3>
+            <p>Study in welcoming spaces with modern facilities that support hands-on learning and collaboration.</p>
+        </article>
+        <article class="home-benefit">
+            <span class="home-benefit-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M8 39h32M12 34l9-10 7 6 10-14M30 16h8v8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <h3>Career Opportunities</h3>
+            <p>Build relevant skills and get ready to pursue meaningful opportunities in your chosen field.</p>
+        </article>
+        <article class="home-benefit">
+            <span class="home-benefit-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M24 40s-15-8-15-20a8 8 0 0 1 15-4 8 8 0 0 1 15 4c0 12-15 20-15 20Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M17 25h5l3-6 4 11 3-5h3" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <h3>Student Support</h3>
+            <p>Get guidance and encouragement from a community that is here to help you succeed.</p>
+        </article>
+    </div>
+</section>
+
+<section class="home-admission-process">
+    <div class="home-container">
+        <div class="home-section-heading">
+            <div>
+                <span class="home-section-kicker">YOUR NEXT STEP IS SIMPLE</span>
+                <h2>Admission Process</h2>
+            </div>
+            <a class="home-text-link" href="{% url 'admission' %}">Admission details <span aria-hidden="true">&rarr;</span></a>
+        </div>
+        <ol class="home-steps">
+            <li><span class="home-step-number">01</span><span class="home-step-title">Register</span><span class="home-step-copy">Create your applicant profile.</span></li>
+            <li><span class="home-step-number">02</span><span class="home-step-title">Fill Application</span><span class="home-step-copy">Tell us about your goals.</span></li>
+            <li><span class="home-step-number">03</span><span class="home-step-title">Upload Documents</span><span class="home-step-copy">Submit the required documents.</span></li>
+            <li><span class="home-step-number">04</span><span class="home-step-title">Get Admission Decision</span><span class="home-step-copy">We will keep you informed.</span></li>
+        </ol>
+        <a class="home-button home-button-primary" href="{% url 'admission_application' %}">Apply Now <span aria-hidden="true">&rarr;</span></a>
+    </div>
+</section>
+
+<section class="home-notice home-container" aria-labelledby="notice-title">
+    <div class="home-notice-icon" aria-hidden="true">!</div>
+    <div class="home-notice-copy">
+        <span class="home-section-kicker">NOW ACCEPTING APPLICATIONS</span>
+        <h2 id="notice-title">Admissions Open for 2026–2027</h2>
+        <p>Applications are now open for selected undergraduate, postgraduate and diploma programs.</p>
+    </div>
+    <a class="home-button home-button-white" href="{% url 'admission_application' %}">Apply Online <span aria-hidden="true">&rarr;</span></a>
+</section>
+
+<section class="home-container text-center py-4" aria-label="College administration">
+    <a class="admission-button admission-button-primary" href="{% url 'college_admin_login' %}">College Admin Login</a>
+</section>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}About Our Institution{% endblock %}
+{% block meta_description %}Learn about our institution's history, vision, mission, values, academic community, and student facilities.{% endblock %}
+
+{% block content %}
+<section class="about-banner" aria-labelledby="about-title">
+    <div class="about-container">
+        <span class="about-kicker">GET TO KNOW US</span>
+        <h1 id="about-title">About Our Institution</h1>
+        <nav class="about-breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">About</span>
+        </nav>
+    </div>
+</section>
+
+<section class="about-story about-container" aria-labelledby="who-we-are-title">
+    <div class="about-story-art" aria-hidden="true">
+        <div class="about-art-circle about-art-circle-one"></div>
+        <div class="about-art-circle about-art-circle-two"></div>
+        <svg viewBox="0 0 480 360" role="presentation">
+            <path class="about-art-ground" d="M27 285c72-38 139-41 207-12s130 31 219-5v72H27v-55Z"/>
+            <path class="about-building-body" d="M101 151h280v152H101z"/>
+            <path class="about-building-roof" d="m75 153 166-97 166 97H75Z"/>
+            <path class="about-building-pediment" d="m190 145 51-39 51 39H190Z"/>
+            <path class="about-building-column" d="M125 174h20v110h-20zm58 0h20v110h-20zm58 0h20v110h-20zm58 0h20v110h-20zm58 0h20v110h-20z"/>
+            <path class="about-building-door" d="M222 237a19 19 0 0 1 38 0v47h-38v-47Z"/>
+            <path class="about-building-base" d="M86 286h310v13H86zm-17 14h344v12H69z"/>
+            <circle class="about-art-sun" cx="361" cy="75" r="30"/>
+            <path class="about-art-leaf" d="M62 293c-19-28-16-53 4-71 24 25 23 47 9 71H62Zm-8 8h43v8H54z"/>
+            <path class="about-art-leaf" d="M397 291c-19-28-16-53 4-71 24 25 23 47 9 71h-13Zm-8 8h43v8h-43z"/>
+            <rect class="about-building-window" x="153" y="191" width="12" height="27" rx="6"/>
+            <rect class="about-building-window" x="211" y="191" width="12" height="27" rx="6"/>
+            <rect class="about-building-window" x="257" y="191" width="12" height="27" rx="6"/>
+            <rect class="about-building-window" x="315" y="191" width="12" height="27" rx="6"/>
+        </svg>
+        <span class="about-art-caption">A community built around learning</span>
+    </div>
+    <div class="about-story-copy">
+        <span class="about-kicker">OUR STORY</span>
+        <h2 id="who-we-are-title">Who We Are</h2>
+        <p>We are a learning community committed to helping students discover their strengths and prepare for a changing world. Our institution brings together academic study, practical experience, and personal guidance so every learner can make progress with purpose.</p>
+        <p>Our story is shaped by a lasting belief: education should open doors. We continue to build on that belief by creating an inclusive environment where curiosity is encouraged, effort is supported, and every student is invited to aim higher.</p>
+        <a class="about-link" href="{% url 'courses' %}">Explore our programs <span aria-hidden="true">&rarr;</span></a>
+    </div>
+</section>
+
+<section class="about-purpose">
+    <div class="about-container">
+        <div class="about-section-heading">
+            <span class="about-kicker">WHAT GUIDES US</span>
+            <h2>Purpose in every step</h2>
+            <p>Our vision, mission, and values shape the way we teach, learn, and support one another.</p>
+        </div>
+        <div class="about-purpose-grid">
+            <article class="about-purpose-card">
+                <span class="about-purpose-number">01</span>
+                <span class="about-purpose-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none"><path d="M4 24s7-12 20-12 20 12 20 12-7 12-20 12S4 24 4 24Z" stroke="currentColor" stroke-width="3"/><circle cx="24" cy="24" r="6" stroke="currentColor" stroke-width="3"/></svg>
+                </span>
+                <h3>Our Vision</h3>
+                <p>To make quality education accessible and empowering, helping every student grow into a confident, capable, and thoughtful contributor to society.</p>
+            </article>
+            <article class="about-purpose-card">
+                <span class="about-purpose-number">02</span>
+                <span class="about-purpose-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none"><path d="M8 39h32M12 35V20l12-8 12 8v15M19 35V25h10v10M7 17l17-11 17 11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <h3>Our Mission</h3>
+                <p>To help students develop academic, technical, professional, and personal skills through engaging teaching, practical learning, and supportive guidance.</p>
+            </article>
+            <article class="about-purpose-card">
+                <span class="about-purpose-number">03</span>
+                <span class="about-purpose-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none"><path d="m24 5 5 10 11 2-8 8 2 12-10-5-10 5 2-12-8-8 11-2 5-10Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>
+                </span>
+                <h3>Our Values</h3>
+                <p>We value curiosity, integrity, respect, inclusion, and a commitment to doing our best—in the classroom and throughout our community.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="about-statistics about-container" aria-label="Institution at a glance">
+    <div class="about-stat">
+        <strong>10<span>+</span></strong>
+        <span>Years of Excellence</span>
+    </div>
+    <div class="about-stat">
+        <strong>2000<span>+</span></strong>
+        <span>Students</span>
+    </div>
+    <div class="about-stat">
+        <strong>50<span>+</span></strong>
+        <span>Experienced Faculty</span>
+    </div>
+    <div class="about-stat">
+        <strong>20<span>+</span></strong>
+        <span>Programs</span>
+    </div>
+</section>
+
+<section class="about-facilities">
+    <div class="about-container">
+        <div class="about-section-heading">
+            <span class="about-kicker">MADE FOR LEARNING</span>
+            <h2>Facilities for every part of student life</h2>
+            <p>Spaces and services designed to make campus life welcoming, focused, and full of opportunity.</p>
+        </div>
+        <div class="about-facility-grid">
+            <article class="about-facility-card">
+                <span class="about-facility-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M6 40h36M10 40V18l14-9 14 9v22M17 40V27h14v13M17 20h.1M24 20h.1M31 20h.1" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <h3>Modern Classrooms</h3><p>Bright, comfortable spaces for focused learning and discussion.</p>
+            </article>
+            <article class="about-facility-card">
+                <span class="about-facility-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="6" y="8" width="36" height="26" rx="3" stroke="currentColor" stroke-width="3"/><path d="M17 41h14M24 34v7M13 15h10v8H13zM28 15h7M28 21h7M13 28h22" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <h3>Computer Labs</h3><p>Technology-equipped labs for practice, projects, and exploration.</p>
+            </article>
+            <article class="about-facility-card">
+                <span class="about-facility-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M7 12h14a5 5 0 0 1 5 5v25H12a5 5 0 0 1-5-5V12Zm34 0H27a5 5 0 0 0-5 5v25h14a5 5 0 0 0 5-5V12Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M13 21h7M13 27h7M28 21h7M28 27h7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></span>
+                <h3>Library</h3><p>Books and study areas to support research and lifelong learning.</p>
+            </article>
+            <article class="about-facility-card">
+                <span class="about-facility-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M20 7h8M24 7v12l12 20H12l12-20M16 31h16M19 25h10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <h3>Laboratories</h3><p>Practical learning environments for experiments and discovery.</p>
+            </article>
+            <article class="about-facility-card">
+                <span class="about-facility-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="3"/><path d="M24 6c6 6 9 12 9 18s-3 12-9 18M24 6c-6 6-9 12-9 18s3 12 9 18M7 19h34M7 29h34" stroke="currentColor" stroke-width="2.5"/></svg></span>
+                <h3>Sports Facilities</h3><p>Opportunities to stay active, play as a team, and build well-being.</p>
+            </article>
+            <article class="about-facility-card">
+                <span class="about-facility-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M8 40h32M11 40V18h26v22M8 18l16-10 16 10M18 25h.1M24 25h.1M30 25h.1M20 40V31h8v9" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <h3>Hostel</h3><p>On-campus accommodation to help students feel at home.</p>
+            </article>
+            <article class="about-facility-card">
+                <span class="about-facility-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M9 33V16a4 4 0 0 1 4-4h22a4 4 0 0 1 4 4v17M6 33h36v5H6zM13 38v4m22-4v4" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 20h20v9H14z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="14" cy="34" r="2" fill="currentColor"/><circle cx="34" cy="34" r="2" fill="currentColor"/></svg></span>
+                <h3>Transportation</h3><p>Convenient transport support for safer, easier campus travel.</p>
+            </article>
+            <article class="about-facility-card">
+                <span class="about-facility-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><path d="M8 40h32M12 40V21h24v19M8 21l16-13 16 13M18 28h12M18 34h12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 15h8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span>
+                <h3>Cafeteria</h3><p>A friendly place to enjoy a meal and connect between classes.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="about-cta" aria-labelledby="about-cta-title">
+    <div class="about-container about-cta-inner">
+        <div>
+            <span class="about-kicker">YOUR NEXT CHAPTER STARTS HERE</span>
+            <h2 id="about-cta-title">Ready to Start Your Journey?</h2>
+            <p>Find a program that fits your goals and take the next step toward your future.</p>
+        </div>
+        <div class="about-cta-actions">
+            <a class="about-button about-button-light" href="{% url 'courses' %}">View Courses <span aria-hidden="true">&rarr;</span></a>
+            <a class="about-button about-button-outline" href="{% url 'admission_application' %}">Apply Now</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

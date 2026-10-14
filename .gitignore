@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Database (optional - uncomment if you want database ignored)
+# *.sqlite3
+# db.sqlite3
+
+# Uploads & Media
+private_media/
+*.log
+
+# IDE & OS
+.project/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

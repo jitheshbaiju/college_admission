@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}College Admin Login{% endblock %}
+{% block meta_description %}Sign in to manage college courses and student admission applications.{% endblock %}
+
+{% block content %}
+<section class="student-login-page" aria-labelledby="college-admin-login-title">
+    <div class="student-login-layout">
+        <aside class="student-login-welcome">
+            <div class="student-login-welcome-copy">
+                <span class="student-login-eyebrow">COLLEGE ADMINISTRATION</span>
+                <h1>Welcome to your college portal.</h1>
+                <p>Sign in with your administrator account to manage college information, courses, and student applications.</p>
+                <div class="student-login-points">
+                    <span><span aria-hidden="true">✓</span> Review and manage applications</span>
+                    <span><span aria-hidden="true">✓</span> Update college courses</span>
+                </div>
+            </div>
+            <p class="student-login-caption">College administration portal</p>
+        </aside>
+
+        <div class="student-login-form-side">
+            <div class="student-login-card">
+                <span class="student-login-form-kicker">STAFF PORTAL</span>
+                <h2 id="college-admin-login-title">College Admin Login</h2>
+                <p class="student-login-description">Enter your staff username or email and password.</p>
+
+                {% if form.non_field_errors %}
+                <div class="student-login-error" role="alert">
+                    {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'college_admin_login' %}" class="student-login-form">
+                    {% csrf_token %}
+
+                    <div class="student-login-field">
+                        <label for="{{ form.username.id_for_label }}">Email / Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}<div class="student-login-field-error">{{ form.username.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="student-login-field">
+                        <label for="{{ form.password.id_for_label }}">Password</label>
+                        {{ form.password }}
+                        {% if form.password.errors %}<div class="student-login-field-error">{{ form.password.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="student-login-options">
+                        <label class="remember-option" for="{{ form.remember_me.id_for_label }}">
+                            {{ form.remember_me }}
+                            <span>Remember Me</span>
+                        </label>
+                    </div>
+
+                    <button class="student-login-submit" type="submit">Sign In <span aria-hidden="true">&rarr;</span></button>
+                </form>
+            </div>
+            <p class="student-login-help">Need help signing in? <a href="{% url 'contact' %}">Contact admissions</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}

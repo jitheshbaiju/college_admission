@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Student Login{% endblock %}
+{% block meta_description %}Log in to continue your student admission application.{% endblock %}
+
+{% block content %}
+<section class="student-login-page" aria-labelledby="student-login-title">
+    <div class="student-login-layout">
+        <aside class="student-login-welcome">
+            <div class="student-login-welcome-copy">
+                <span class="student-login-eyebrow">YOUR FUTURE STARTS HERE</span>
+                <h1>Welcome back to your learning journey.</h1>
+                <p>Sign in to continue your admission application, keep track of your progress, and take the next step toward your goals.</p>
+                <div class="student-login-points">
+                    <span><span aria-hidden="true">✓</span> Continue your application</span>
+                    <span><span aria-hidden="true">✓</span> Check your admission status</span>
+                </div>
+            </div>
+            <div class="student-login-art" aria-hidden="true">
+                <svg viewBox="0 0 520 390" role="presentation">
+                    <circle class="login-art-sun" cx="383" cy="75" r="39"/>
+                    <circle class="login-art-orbit" cx="275" cy="205" r="160"/>
+                    <path class="login-art-ground" d="M26 321c76-43 151-45 225-12s151 34 243-5v64H26v-47Z"/>
+                    <path class="login-art-building" d="M115 156h295v163H115z"/>
+                    <path class="login-art-roof" d="m86 157 176-102 177 102H86Z"/>
+                    <path class="login-art-pediment" d="m197 146 65-45 65 45H197Z"/>
+                    <path class="login-art-column" d="M143 181h22v112h-22zm60 0h22v112h-22zm60 0h22v112h-22zm60 0h22v112h-22zm60 0h22v112h-22z"/>
+                    <path class="login-art-door" d="M238 250a24 24 0 0 1 48 0v44h-48v-44Z"/>
+                    <path class="login-art-base" d="M98 300h329v15H98zm-17 16h363v13H81z"/>
+                    <path class="login-art-tree" d="M57 312c-20-32-14-59 8-78 24 28 25 53 8 78H57Zm-8 8h48v9H49z"/>
+                    <path class="login-art-tree" d="M411 305c-20-32-14-59 8-78 24 28 25 53 8 78h-16Zm-8 8h48v9h-48z"/>
+                    <rect class="login-art-window" x="177" y="198" width="13" height="30" rx="6"/>
+                    <rect class="login-art-window" x="237" y="198" width="13" height="30" rx="6"/>
+                    <rect class="login-art-window" x="273" y="198" width="13" height="30" rx="6"/>
+                    <rect class="login-art-window" x="333" y="198" width="13" height="30" rx="6"/>
+                    <g class="login-art-book">
+                        <path d="m335 263 47-24 33 20-47 25-33-21Z"/>
+                        <path d="m335 263 1 17 33 20 1-16"/>
+                        <path d="m370 284 45-25v17l-45 24"/>
+                        <path d="m370 284 45-25"/>
+                    </g>
+                </svg>
+            </div>
+            <p class="student-login-caption">Learn today. Shape tomorrow.</p>
+        </aside>
+
+        <div class="student-login-form-side">
+            <div class="student-login-card">
+                <div class="auth-toggle-group" role="tablist" aria-label="Account access options">
+                    <a href="{% url 'login' %}" class="auth-toggle-btn active" role="tab" aria-selected="true">Student Login</a>
+                    <a href="{% url 'register' %}" class="auth-toggle-btn" role="tab" aria-selected="false">Create Account</a>
+                </div>
+                <span class="student-login-form-kicker">STUDENT PORTAL</span>
+                <h2 id="student-login-title">Student Login</h2>
+                <p class="student-login-description">Login to continue your admission application.</p>
+
+                {% if form.non_field_errors %}
+                <div class="student-login-error" role="alert">
+                    {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+                </div>
+                {% endif %}
+                {% if next and user.is_authenticated %}
+                <div class="student-login-error" role="alert">
+                    <p>Your account does not have access to that page. Please use an eligible account.</p>
+                </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}" class="student-login-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next }}">
+
+                    <div class="student-login-field">
+                        <label for="{{ form.username.id_for_label }}">Email / Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}<div class="student-login-field-error">{{ form.username.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="student-login-field">
+                        <label for="{{ form.password.id_for_label }}">Password</label>
+                        {{ form.password }}
+                        {% if form.password.errors %}<div class="student-login-field-error">{{ form.password.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="student-login-options">
+                        <label class="remember-option" for="{{ form.remember_me.id_for_label }}">
+                            {{ form.remember_me }}
+                            <span>Remember Me</span>
+                        </label>
+                        <a href="{% url 'password_reset' %}">Forgot Password?</a>
+                    </div>
+
+                    <button class="student-login-submit" type="submit">Login <span aria-hidden="true">&rarr;</span></button>
+                </form>
+
+                <p class="student-login-register">Don't have an account? <a href="{% url 'register' %}">Create New Account</a></p>
+            </div>
+            <p class="student-login-help">Need help signing in? <a href="{% url 'contact' %}">Contact admissions</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}

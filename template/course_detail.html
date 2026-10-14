@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.name }} | Course Details{% endblock %}
+{% block meta_description %}Details, eligibility, duration, and fee information for {{ course.name }}.{% endblock %}
+
+{% block content %}
+<section class="courses-banner" aria-labelledby="course-title">
+    <div class="courses-container">
+        <span class="courses-kicker">{{ course.get_category_display }}</span>
+        <h1 id="course-title">{{ course.name }}</h1>
+        <p>{{ course.code }}{% if course.department %} · {{ course.department }}{% endif %}</p>
+        <nav class="courses-breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'courses' %}">Courses</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{{ course.name }}</span>
+        </nav>
+    </div>
+</section>
+
+<section class="courses-listing courses-container" aria-labelledby="course-details-title">
+    <div class="courses-heading">
+        <div>
+            <span class="courses-kicker">PROGRAM INFORMATION</span>
+            <h2 id="course-details-title">Course Details</h2>
+        </div>
+    </div>
+    <article class="program-card">
+        {% if course.image_url %}
+        <div class="program-card-media">
+            <img src="{{ course.image_url }}" alt="{{ course.name }} program">
+        </div>
+        {% endif %}
+        <div class="program-card-content">
+            <p class="program-description">{{ course.description }}</p>
+            <dl class="program-facts">
+                <div><dt>Course code</dt><dd>{{ course.code }}</dd></div>
+                <div><dt>Department</dt><dd>{{ course.department }}</dd></div>
+                <div><dt>Duration</dt><dd>{{ course.duration }}</dd></div>
+                <div><dt>Eligibility</dt><dd>{{ course.eligibility }}</dd></div>
+                <div>
+                    <dt>Course fee</dt>
+                    <dd>{% if course.fees != None %}INR {{ course.fees|floatformat:2 }}{% else %}Contact admissions{% endif %}</dd>
+                </div>
+                <div>
+                    <dt>Available seats</dt>
+                    <dd>{% if course.available_seats != None %}{{ course.available_seats }}{% else %}Enquire{% endif %}</dd>
+                </div>
+            </dl>
+            <div class="program-card-actions">
+                <a class="program-button program-button-primary" href="{% url 'admission_application' %}">Apply Now <span aria-hidden="true">&rarr;</span></a>
+                <a class="program-button program-button-secondary" href="{% url 'courses' %}">Back to Courses</a>
+            </div>
+        </div>
+    </article>
+</section>
+{% endblock %}

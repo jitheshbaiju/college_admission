@@ -1,0 +1,565 @@
+{% extends "base.html" %}
+
+{% block title %}Admin — Student Applications{% endblock %}
+{% block meta_description %}College admin panel: review, approve, reject and delete student admission applications.{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Admin Dashboard Theme ── */
+  :root {
+    --adm-bg: #0f1117;
+    --adm-surface: #1a1d27;
+    --adm-card: #21253a;
+    --adm-border: rgba(255,255,255,.08);
+    --adm-accent: #6c63ff;
+    --adm-green: #22c55e;
+    --adm-yellow: #f59e0b;
+    --adm-red: #ef4444;
+    --adm-blue: #3b82f6;
+    --adm-text: #e2e8f0;
+    --adm-muted: #94a3b8;
+  }
+
+  body { background: var(--adm-bg); color: var(--adm-text); }
+
+  /* ── Hero Banner ── */
+  .adm-hero {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1a1d27 100%);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--adm-border);
+    position: relative;
+    overflow: hidden;
+  }
+  .adm-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 60% 40%, rgba(108,99,255,.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .adm-hero .badge-pill {
+    display: inline-block;
+    background: rgba(108,99,255,.2);
+    border: 1px solid rgba(108,99,255,.4);
+    color: #a5b4fc;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: .3em .9em;
+    border-radius: 999px;
+    margin-bottom: 1rem;
+  }
+  .adm-hero h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 .5rem;
+  }
+  .adm-hero p {
+    color: #a5b4fc;
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  /* ── Stats Row ── */
+  .adm-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    padding: 2rem 2rem 0;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .adm-stat {
+    background: var(--adm-card);
+    border: 1px solid var(--adm-border);
+    border-radius: 14px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .adm-stat:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+  .adm-stat-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: .25rem;
+  }
+  .adm-stat-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--adm-muted); }
+  .stat-total   { color: #fff; }
+  .stat-sub     { color: var(--adm-blue); }
+  .stat-review  { color: var(--adm-yellow); }
+  .stat-accept  { color: var(--adm-green); }
+  .stat-decline { color: var(--adm-red); }
+
+  /* ── Toolbar ── */
+  .adm-toolbar {
+    max-width: 1200px;
+    margin: 1.5rem auto 0;
+    padding: 0 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .adm-filter-tabs { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .adm-filter-tab {
+    background: var(--adm-card);
+    border: 1px solid var(--adm-border);
+    color: var(--adm-muted);
+    padding: .4rem 1rem;
+    border-radius: 999px;
+    font-size: .82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .adm-filter-tab:hover, .adm-filter-tab.active {
+    background: var(--adm-accent);
+    border-color: var(--adm-accent);
+    color: #fff;
+  }
+  .adm-search {
+    position: relative;
+    flex: 1;
+    max-width: 320px;
+    min-width: 180px;
+  }
+  .adm-search input {
+    width: 100%;
+    background: var(--adm-card);
+    border: 1px solid var(--adm-border);
+    color: var(--adm-text);
+    border-radius: 10px;
+    padding: .5rem 1rem .5rem 2.4rem;
+    font-size: .88rem;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .adm-search input:focus { border-color: var(--adm-accent); }
+  .adm-search-icon {
+    position: absolute;
+    left: .75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--adm-muted);
+    font-size: .9rem;
+    pointer-events: none;
+  }
+
+  /* ── Application Cards ── */
+  .adm-cards {
+    max-width: 1200px;
+    margin: 1.5rem auto 3rem;
+    padding: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .adm-card {
+    background: var(--adm-card);
+    border: 1px solid var(--adm-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: box-shadow .2s;
+  }
+  .adm-card:hover { box-shadow: 0 6px 28px rgba(0,0,0,.5); }
+
+  /* card header row */
+  .adm-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .adm-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--adm-accent), #a78bfa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .adm-card-title { flex: 1; min-width: 0; }
+  .adm-card-title strong {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .adm-card-title span {
+    font-size: .8rem;
+    color: var(--adm-muted);
+  }
+
+  /* Status badge */
+  .adm-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .3em;
+    padding: .3em .85em;
+    border-radius: 999px;
+    font-size: .74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    white-space: nowrap;
+  }
+  .adm-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .badge-submitted   { background: rgba(59,130,246,.15); color: var(--adm-blue);   border: 1px solid rgba(59,130,246,.3); }
+  .badge-under_review{ background: rgba(245,158,11,.15); color: var(--adm-yellow); border: 1px solid rgba(245,158,11,.3); }
+  .badge-accepted    { background: rgba(34,197,94,.15);  color: var(--adm-green);  border: 1px solid rgba(34,197,94,.3); }
+  .badge-declined    { background: rgba(239,68,68,.15);  color: var(--adm-red);    border: 1px solid rgba(239,68,68,.3); }
+
+  /* meta grid */
+  .adm-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: .6rem .8rem;
+    font-size: .83rem;
+    border-top: 1px solid var(--adm-border);
+    padding-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .adm-meta-label { color: var(--adm-muted); font-size: .73rem; text-transform: uppercase; letter-spacing: .05em; display: block; margin-bottom: .1rem; }
+  .adm-meta-value { color: var(--adm-text); font-weight: 600; }
+
+  /* document chips */
+  .adm-docs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    border-top: 1px solid var(--adm-border);
+    padding-top: .9rem;
+    margin-bottom: 1rem;
+  }
+  .adm-doc-chip {
+    background: rgba(108,99,255,.12);
+    border: 1px solid rgba(108,99,255,.25);
+    color: #a5b4fc;
+    padding: .2em .7em;
+    border-radius: 6px;
+    font-size: .76rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .2s;
+  }
+  .adm-doc-chip:hover { background: rgba(108,99,255,.3); color: #fff; }
+  .adm-no-docs { color: var(--adm-muted); font-size: .8rem; font-style: italic; }
+
+  /* action buttons */
+  .adm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    border-top: 1px solid var(--adm-border);
+    padding-top: 1rem;
+    align-items: center;
+  }
+  .adm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .35em;
+    padding: .45rem 1.1rem;
+    border-radius: 8px;
+    font-size: .82rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: filter .15s, transform .15s;
+    text-decoration: none;
+    line-height: 1;
+  }
+  .adm-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .adm-btn:active { transform: translateY(0); }
+  .adm-btn-approve  { background: var(--adm-green);  color: #fff; }
+  .adm-btn-reject   { background: var(--adm-yellow); color: #000; }
+  .adm-btn-delete   { background: rgba(239,68,68,.15); color: var(--adm-red); border: 1px solid rgba(239,68,68,.35); }
+  .adm-btn-delete:hover { background: var(--adm-red); color: #fff; filter: none; }
+  .adm-btn-admin    {
+    background: rgba(108,99,255,.2);
+    color: #c7d2fe;
+    border: 1px solid rgba(108,99,255,.45);
+    padding: .5rem 1.25rem;
+    font-size: .88rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  .adm-btn-admin:hover {
+    background: var(--adm-accent);
+    color: #fff;
+    border-color: var(--adm-accent);
+    box-shadow: 0 4px 14px rgba(108,99,255,.4);
+  }
+  .adm-resolved-msg { font-size: .82rem; color: var(--adm-muted); font-style: italic; }
+
+  /* Empty state */
+  .adm-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--adm-muted);
+    background: var(--adm-card);
+    border: 1px solid var(--adm-border);
+    border-radius: 16px;
+  }
+  .adm-empty-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+  .adm-empty h3 { font-size: 1.2rem; color: var(--adm-text); margin-bottom: .5rem; }
+
+  /* Delete confirm modal */
+  .adm-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(4px);
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+  }
+  .adm-modal-overlay.active { display: flex; }
+  .adm-modal {
+    background: var(--adm-card);
+    border: 1px solid var(--adm-border);
+    border-radius: 18px;
+    padding: 2rem;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,.6);
+    animation: modalIn .25s ease;
+  }
+  @keyframes modalIn { from { opacity:0; transform:scale(.92); } to { opacity:1; transform:scale(1); } }
+  .adm-modal-icon { font-size: 3rem; margin-bottom: .75rem; }
+  .adm-modal h3 { font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: .5rem; }
+  .adm-modal p  { color: var(--adm-muted); font-size: .88rem; margin-bottom: 1.5rem; }
+  .adm-modal-actions { display: flex; gap: .75rem; justify-content: center; }
+
+  @media (max-width:640px) {
+    .adm-stats { padding: 1.5rem 1rem 0; }
+    .adm-toolbar, .adm-cards { padding: 0 1rem; }
+    .adm-cards { margin: 1rem auto 2rem; }
+    .adm-hero { padding: 2rem 1rem 1.75rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<div class="adm-hero">
+  <div class="badge-pill">&#x1F6E1;&#xFE0F; College Administration</div>
+  <h1 id="admin-dashboard-title">Applications Dashboard</h1>
+  <p>Review, approve, reject and delete student admission requests.</p>
+  <div class="adm-hero-actions" style="margin-top: 1.25rem; display: flex; gap: .75rem; justify-content: center; align-items: center; flex-wrap: wrap;">
+    <a class="adm-btn adm-btn-admin" href="{% url 'admin:index' %}" id="django-admin-btn">
+      &#x2699;&#xFE0F; Django Admin &rarr;
+    </a>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="adm-stats" aria-label="Application statistics">
+  <div class="adm-stat">
+    <div class="adm-stat-value stat-total">{{ counts.total }}</div>
+    <div class="adm-stat-label">Total</div>
+  </div>
+  <div class="adm-stat">
+    <div class="adm-stat-value stat-sub">{{ counts.submitted }}</div>
+    <div class="adm-stat-label">Submitted</div>
+  </div>
+  <div class="adm-stat">
+    <div class="adm-stat-value stat-review">{{ counts.under_review }}</div>
+    <div class="adm-stat-label">Under Review</div>
+  </div>
+  <div class="adm-stat">
+    <div class="adm-stat-value stat-accept">{{ counts.accepted }}</div>
+    <div class="adm-stat-label">Approved</div>
+  </div>
+  <div class="adm-stat">
+    <div class="adm-stat-value stat-decline">{{ counts.declined }}</div>
+    <div class="adm-stat-label">Declined</div>
+  </div>
+</div>
+
+<!-- Toolbar -->
+<div class="adm-toolbar">
+  <div class="adm-filter-tabs" role="tablist" aria-label="Filter applications">
+    <button class="adm-filter-tab active" data-filter="all"          onclick="filterCards('all',this)">All</button>
+    <button class="adm-filter-tab"        data-filter="submitted"    onclick="filterCards('submitted',this)">Submitted</button>
+    <button class="adm-filter-tab"        data-filter="under_review" onclick="filterCards('under_review',this)">Under Review</button>
+    <button class="adm-filter-tab"        data-filter="accepted"     onclick="filterCards('accepted',this)">Approved</button>
+    <button class="adm-filter-tab"        data-filter="declined"     onclick="filterCards('declined',this)">Declined</button>
+  </div>
+  <div class="adm-search">
+    <span class="adm-search-icon">&#x1F50D;</span>
+    <input type="search" id="adminSearch" placeholder="Search name, email, course…" oninput="searchCards(this.value)" aria-label="Search applications">
+  </div>
+</div>
+
+<!-- Cards -->
+<div class="adm-cards" id="appCards">
+  {% for app in applications %}
+  {% with name=app.applicant.get_full_name|default:app.applicant.get_username %}
+  <article class="adm-card"
+           data-status="{{ app.status }}"
+           data-search="{{ name|lower }} {{ app.applicant.email|lower }} {{ app.course.name|lower }} {{ app.application_number }}">
+
+    <!-- Header -->
+    <div class="adm-card-header">
+      <div class="adm-avatar">{{ name|slice:":1"|upper }}</div>
+      <div class="adm-card-title">
+        <strong>{{ name }}</strong>
+        <span>{{ app.applicant.email }} &nbsp;|&nbsp; {{ app.phone }}</span>
+      </div>
+      <span class="adm-badge badge-{{ app.status }}">{{ app.get_status_display }}</span>
+    </div>
+
+    <!-- Meta Grid -->
+    <div class="adm-meta">
+      <div>
+        <span class="adm-meta-label">Application #</span>
+        <span class="adm-meta-value" style="font-size:.78rem;font-family:monospace;">{{ app.application_number|stringformat:"s"|slice:":8" }}…</span>
+      </div>
+      <div>
+        <span class="adm-meta-label">Course</span>
+        <span class="adm-meta-value">{{ app.course.name }}</span>
+      </div>
+      <div>
+        <span class="adm-meta-label">Course Code</span>
+        <span class="adm-meta-value">{{ app.course.code }}</span>
+      </div>
+      <div>
+        <span class="adm-meta-label">Date of Birth</span>
+        <span class="adm-meta-value">{{ app.date_of_birth|date:"M j, Y"|default:"—" }}</span>
+      </div>
+      <div>
+        <span class="adm-meta-label">Category</span>
+        <span class="adm-meta-value">{{ app.get_category_display|default:"—" }}</span>
+      </div>
+      <div>
+        <span class="adm-meta-label">Qualification</span>
+        <span class="adm-meta-value">{{ app.highest_qualification }}</span>
+      </div>
+      <div>
+        <span class="adm-meta-label">Submitted On</span>
+        <span class="adm-meta-value">{{ app.submitted_at|date:"M j, Y, g:i a" }}</span>
+      </div>
+    </div>
+
+    <!-- Documents -->
+    <div class="adm-docs">
+      {% if app.passport_photo %}<a class="adm-doc-chip" href="{% url 'admission_document' app.pk 'passport_photo' %}">Photo</a>{% endif %}
+      {% if app.student_signature %}<a class="adm-doc-chip" href="{% url 'admission_document' app.pk 'student_signature' %}">Signature</a>{% endif %}
+      {% if app.identity_proof %}<a class="adm-doc-chip" href="{% url 'admission_document' app.pk 'identity_proof' %}">ID Proof</a>{% endif %}
+      {% if app.tenth_certificate %}<a class="adm-doc-chip" href="{% url 'admission_document' app.pk 'tenth_certificate' %}">10th Cert</a>{% endif %}
+      {% if app.twelfth_certificate %}<a class="adm-doc-chip" href="{% url 'admission_document' app.pk 'twelfth_certificate' %}">12th Cert</a>{% endif %}
+      {% if app.transfer_certificate %}<a class="adm-doc-chip" href="{% url 'admission_document' app.pk 'transfer_certificate' %}">Transfer</a>{% endif %}
+      {% if app.conduct_certificate %}<a class="adm-doc-chip" href="{% url 'admission_document' app.pk 'conduct_certificate' %}">Conduct</a>{% endif %}
+      {% if app.caste_certificate %}<a class="adm-doc-chip" href="{% url 'admission_document' app.pk 'caste_certificate' %}">Caste Cert</a>{% endif %}
+      {% if not app.passport_photo and not app.student_signature and not app.identity_proof and not app.tenth_certificate and not app.twelfth_certificate and not app.transfer_certificate and not app.conduct_certificate and not app.caste_certificate %}
+        <span class="adm-no-docs">No documents uploaded</span>
+      {% endif %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="adm-actions">
+      {% if app.status == "submitted" or app.status == "under_review" %}
+        <form method="post" action="{% url 'college_application_action' app.pk 'approve' %}" style="margin:0">
+          {% csrf_token %}
+          <button class="adm-btn adm-btn-approve" type="submit" id="approve-{{ app.pk }}">Approve</button>
+        </form>
+        <form method="post" action="{% url 'college_application_action' app.pk 'decline' %}" style="margin:0">
+          {% csrf_token %}
+          <button class="adm-btn adm-btn-reject" type="submit" id="reject-{{ app.pk }}">Reject</button>
+        </form>
+      {% else %}
+        <span class="adm-resolved-msg">
+          {% if app.status == "accepted" %}Approved{% else %}Declined{% endif %} — no further action needed
+        </span>
+      {% endif %}
+
+      <button class="adm-btn adm-btn-delete" type="button"
+              id="delete-btn-{{ app.pk }}"
+              onclick="confirmDelete({{ app.pk }}, '{{ app.application_number|stringformat:'s'|slice:':8' }}')">
+        Delete
+      </button>
+    </div>
+
+  </article>
+  {% endwith %}
+  {% empty %}
+  <div class="adm-empty">
+    <div class="adm-empty-icon">&#x1F4ED;</div>
+    <h3>No applications received yet</h3>
+    <p>When students submit applications, they will appear here.</p>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="adm-modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+  <div class="adm-modal">
+    <div class="adm-modal-icon">&#x26A0;&#xFE0F;</div>
+    <h3 id="deleteModalTitle">Delete Application?</h3>
+    <p>This will permanently remove application <strong id="deleteAppNum"></strong>. This cannot be undone.</p>
+    <div class="adm-modal-actions">
+      <button class="adm-btn" type="button" style="background:#334155;color:#e2e8f0" onclick="closeDeleteModal()">Cancel</button>
+      <form id="deleteForm" method="post" style="margin:0">
+        {% csrf_token %}
+        <button class="adm-btn" style="background:#ef4444;color:#fff" type="submit">Delete permanently</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  /* Filter by status */
+  function filterCards(status, btn) {
+    document.querySelectorAll('.adm-filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters(status, document.getElementById('adminSearch').value);
+  }
+
+  /* Live search */
+  function searchCards(q) {
+    const activeFilter = document.querySelector('.adm-filter-tab.active').dataset.filter;
+    applyFilters(activeFilter, q);
+  }
+
+  function applyFilters(status, query) {
+    const q = query.trim().toLowerCase();
+    document.querySelectorAll('#appCards .adm-card').forEach(card => {
+      const statusMatch = status === 'all' || card.dataset.status === status;
+      const textMatch   = !q || card.dataset.search.includes(q);
+      card.style.display = (statusMatch && textMatch) ? '' : 'none';
+    });
+  }
+
+  /* Delete modal */
+  function confirmDelete(appId, appNum) {
+    document.getElementById('deleteAppNum').textContent = appNum + '...';
+    document.getElementById('deleteForm').action = '/college/applications/' + appId + '/delete/';
+    document.getElementById('deleteModal').classList.add('active');
+  }
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('active');
+  }
+  document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDeleteModal();
+  });
+</script>
+{% endblock %}

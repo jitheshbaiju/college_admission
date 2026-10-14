@@ -1,0 +1,105 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% block meta_description %}Discover learning opportunities, campus life, and admissions.{% endblock %}">
+    <title>{% block title %}Welcome{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <nav class="primary-nav" aria-label="Main navigation">
+                {% if request.user.is_staff %}
+                    <a href="{% url 'college_dashboard' %}"{% if request.resolver_match.url_name == 'college_dashboard' %} aria-current="page"{% endif %}>Applications</a>
+                    <a href="{% url 'admin_course_list' %}"{% if request.resolver_match.url_name == 'admin_course_list' or request.resolver_match.url_name == 'admin_course_add' or request.resolver_match.url_name == 'admin_course_edit' %} aria-current="page"{% endif %}>Courses</a>
+                    <a href="{% url 'college_profile' %}"{% if request.resolver_match.url_name == 'college_profile' %} aria-current="page"{% endif %}>College Information</a>
+                    <a href="{% url 'admin:index' %}">Django Admin</a>
+                    <a class="nav-register" href="{% url 'logout' %}">Logout</a>
+                {% elif request.user.is_authenticated %}
+                    <a href="{% url 'student_profile' %}"{% if request.resolver_match.url_name == 'student_profile' %} aria-current="page"{% endif %}>Profile</a>
+                    <a href="{% url 'admission_application' %}"{% if request.resolver_match.url_name == 'admission_application' %} aria-current="page"{% endif %}>New Application</a>
+                    <a href="{% url 'admission_dashboard' %}"{% if request.resolver_match.url_name == 'admission_dashboard' %} aria-current="page"{% endif %}>Application Status</a>
+                    <a class="nav-login" href="{% url 'logout' %}"{% if request.resolver_match.url_name == 'logout' %} aria-current="page"{% endif %}>Logout</a>
+                {% else %}
+                    <a href="{% url 'home' %}"{% if request.resolver_match.url_name == 'home' %} aria-current="page"{% endif %}>Home</a>
+                    <a href="{% url 'about' %}"{% if request.resolver_match.url_name == 'about' %} aria-current="page"{% endif %}>About</a>
+                    <a href="{% url 'courses' %}"{% if request.resolver_match.url_name == 'courses' %} aria-current="page"{% endif %}>Courses</a>
+                    <a href="{% url 'admission' %}"{% if request.resolver_match.url_name == 'admission' %} aria-current="page"{% endif %}>Admission</a>
+                    <a href="{% url 'contact' %}"{% if request.resolver_match.url_name == 'contact' %} aria-current="page"{% endif %}>Contact</a>
+                    <a class="nav-login" href="{% url 'login' %}"{% if request.resolver_match.url_name == 'login' %} aria-current="page"{% endif %}>Login</a>
+                    <a class="nav-register" href="{% url 'register' %}"{% if request.resolver_match.url_name == 'register' %} aria-current="page"{% endif %}>Register</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'info' %}info{% else %}success{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main id="main-content" class="site-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-main">
+            <section class="footer-institution" aria-labelledby="footer-institution-title">
+                <h2 id="footer-institution-title">Institution</h2>
+                <p>A welcoming academic community where curiosity grows into knowledge, confidence, and opportunity.</p>
+            </section>
+
+            <nav class="footer-column" aria-label="Quick links">
+                <h2>Quick Links</h2>
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'courses' %}">Courses</a>
+                <a href="{% url 'admission' %}">Admission</a>
+                <a href="{% url 'contact' %}">Contact</a>
+            </nav>
+
+            <nav class="footer-column" aria-label="Admission information">
+                <h2>Admission</h2>
+                <a href="{% url 'admission_application' %}">Apply Now</a>
+                <a href="{% url 'admission' %}">Eligibility</a>
+                <a href="{% url 'admission' %}">Admission Process</a>
+                <a href="{% url 'admission' %}">Important Dates</a>
+            </nav>
+
+            <section class="footer-column" aria-labelledby="footer-contact-title">
+                <h2 id="footer-contact-title">Contact</h2>
+                <p>Institution address</p>
+                <p><a href="tel:+911234567890">+91 1234567890</a></p>
+                <p><a href="mailto:admission@gmail.com">admission@gmail.com</a></p>
+            </section>
+
+            <nav class="footer-column" aria-label="Social media">
+                <h2>Social Media</h2>
+                <a href="https://www.facebook.com/">Facebook</a>
+                <a href="https://www.instagram.com/">Instagram</a>
+                <a href="https://www.linkedin.com/">LinkedIn</a>
+                <a href="https://www.youtube.com/">YouTube</a>
+            </nav>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

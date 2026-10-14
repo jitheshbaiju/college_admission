@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Courses — Admin{% endblock %}
+{% block meta_description %}Add, edit and delete courses offered by the college.{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --adm-bg: #0f1117; --adm-card: #21253a; --adm-border: rgba(255,255,255,.08);
+    --adm-accent: #6c63ff; --adm-green: #22c55e; --adm-red: #ef4444;
+    --adm-yellow: #f59e0b; --adm-text: #e2e8f0; --adm-muted: #94a3b8;
+  }
+  body { background: var(--adm-bg); color: var(--adm-text); }
+
+  .adm-hero {
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid var(--adm-border);
+  }
+  .adm-hero .badge-pill {
+    display: inline-block; background: rgba(108,99,255,.2);
+    border: 1px solid rgba(108,99,255,.4); color: #a5b4fc;
+    font-size: .7rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; padding: .3em .9em; border-radius: 999px; margin-bottom: .75rem;
+  }
+  .adm-hero h1 { font-size: clamp(1.6rem,3.5vw,2.4rem); font-weight: 800; color: #fff; margin: 0 0 .4rem; }
+  .adm-hero p  { color: #94a3b8; margin: 0; }
+
+  .adm-toolbar {
+    max-width: 1100px; margin: 1.5rem auto 0; padding: 0 2rem;
+    display: flex; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  }
+  .adm-search { position: relative; flex: 1; max-width: 300px; min-width: 160px; }
+  .adm-search input {
+    width: 100%; background: var(--adm-card); border: 1px solid var(--adm-border);
+    color: var(--adm-text); border-radius: 10px; padding: .5rem 1rem .5rem 2.3rem;
+    font-size: .88rem; outline: none; transition: border-color .2s;
+  }
+  .adm-search input:focus { border-color: var(--adm-accent); }
+  .adm-search-icon {
+    position: absolute; left: .7rem; top: 50%; transform: translateY(-50%);
+    color: var(--adm-muted); pointer-events: none;
+  }
+  .adm-add-btn {
+    display: inline-flex; align-items: center; gap: .4em;
+    background: var(--adm-accent); color: #fff; font-weight: 700;
+    font-size: .88rem; padding: .55rem 1.3rem; border-radius: 10px;
+    text-decoration: none; transition: filter .2s, transform .15s;
+    border: none; cursor: pointer;
+  }
+  .adm-add-btn:hover { filter: brightness(1.15); transform: translateY(-1px); color: #fff; }
+
+  /* Table */
+  .adm-table-wrap {
+    max-width: 1100px; margin: 1.5rem auto 3rem; padding: 0 2rem; overflow-x: auto;
+  }
+  .adm-table {
+    width: 100%; border-collapse: collapse; font-size: .85rem;
+    background: var(--adm-card); border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--adm-border);
+  }
+  .adm-table thead { background: rgba(108,99,255,.15); }
+  .adm-table th {
+    padding: .85rem 1rem; text-align: left; font-size: .73rem;
+    text-transform: uppercase; letter-spacing: .08em; color: var(--adm-muted);
+    font-weight: 700; white-space: nowrap; border-bottom: 1px solid var(--adm-border);
+  }
+  .adm-table td {
+    padding: .85rem 1rem; border-bottom: 1px solid var(--adm-border);
+    vertical-align: middle; color: var(--adm-text);
+  }
+  .adm-table tr:last-child td { border-bottom: none; }
+  .adm-table tr:hover td { background: rgba(255,255,255,.03); }
+
+  .adm-badge-active   { background: rgba(34,197,94,.15);  color: var(--adm-green); border: 1px solid rgba(34,197,94,.3);  padding: .2em .7em; border-radius: 999px; font-size: .72rem; font-weight: 700; }
+  .adm-badge-inactive { background: rgba(239,68,68,.15);  color: var(--adm-red);   border: 1px solid rgba(239,68,68,.3);  padding: .2em .7em; border-radius: 999px; font-size: .72rem; font-weight: 700; }
+  .adm-cat-tag {
+    background: rgba(108,99,255,.12); color: #a5b4fc;
+    border: 1px solid rgba(108,99,255,.25); padding: .15em .6em;
+    border-radius: 6px; font-size: .72rem; font-weight: 600;
+  }
+  .adm-btn { display: inline-flex; align-items: center; gap: .3em; padding: .35rem .85rem; border-radius: 7px; font-size: .78rem; font-weight: 700; border: none; cursor: pointer; transition: filter .15s, transform .15s; text-decoration: none; }
+  .adm-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .adm-btn-edit   { background: var(--adm-accent); color: #fff; }
+  .adm-btn-delete { background: rgba(239,68,68,.15); color: var(--adm-red); border: 1px solid rgba(239,68,68,.3); }
+  .adm-btn-delete:hover { background: var(--adm-red); color: #fff; filter: none; }
+  .adm-actions-cell { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+
+  .adm-empty { text-align: center; padding: 3rem 2rem; color: var(--adm-muted); }
+  .adm-empty h3 { color: var(--adm-text); margin-bottom: .4rem; }
+
+  /* Modal */
+  .adm-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 9000; align-items: center; justify-content: center; }
+  .adm-modal-overlay.active { display: flex; }
+  .adm-modal { background: var(--adm-card); border: 1px solid var(--adm-border); border-radius: 18px; padding: 2rem; max-width: 420px; width: 90%; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,.6); animation: modalIn .25s ease; }
+  @keyframes modalIn { from { opacity:0; transform:scale(.92); } to { opacity:1; transform:scale(1); } }
+  .adm-modal-icon { font-size: 2.8rem; margin-bottom: .6rem; }
+  .adm-modal h3 { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: .4rem; }
+  .adm-modal p  { color: var(--adm-muted); font-size: .86rem; margin-bottom: 1.4rem; }
+  .adm-modal-actions { display: flex; gap: .75rem; justify-content: center; }
+
+  @media (max-width:640px) { .adm-toolbar, .adm-table-wrap { padding: 0 1rem; } .adm-hero { padding: 2rem 1rem 1.5rem; } }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="adm-hero">
+  <div class="badge-pill">&#x1F4DA; Course Management</div>
+  <h1 id="admin-courses-title">Manage Courses</h1>
+  <p>Add new courses, edit details, or remove courses from the student portal.</p>
+</div>
+
+<div class="adm-toolbar">
+  <div class="adm-search">
+    <span class="adm-search-icon">&#x1F50D;</span>
+    <input type="search" id="courseSearch" placeholder="Search courses…" oninput="searchCourses(this.value)" aria-label="Search courses">
+  </div>
+  <a class="adm-add-btn" href="{% url 'admin_course_add' %}" id="add-course-btn">&#x2795; Add New Course</a>
+</div>
+
+<div class="adm-table-wrap">
+  {% if courses %}
+  <table class="adm-table" id="courseTable" aria-label="Courses list">
+    <thead>
+      <tr>
+        <th>Course Name</th>
+        <th>Code</th>
+        <th>Category</th>
+        <th>Department</th>
+        <th>Duration</th>
+        <th>Fee (INR)</th>
+        <th>Seats</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="courseBody">
+      {% for course in courses %}
+      <tr data-search="{{ course.name|lower }} {{ course.code|lower }} {{ course.department|lower }} {{ course.category }}">
+        <td><strong>{{ course.name }}</strong></td>
+        <td><code style="color:#a5b4fc;font-size:.82rem;">{{ course.code }}</code></td>
+        <td><span class="adm-cat-tag">{{ course.get_category_display }}</span></td>
+        <td>{{ course.department }}</td>
+        <td>{{ course.duration }}</td>
+        <td>{% if course.fees %}{{ course.fees|floatformat:0 }}{% else %}<span style="color:var(--adm-muted)">—</span>{% endif %}</td>
+        <td>{% if course.available_seats %}{{ course.available_seats }}{% else %}<span style="color:var(--adm-muted)">—</span>{% endif %}</td>
+        <td>
+          {% if course.is_active %}
+            <span class="adm-badge-active">Active</span>
+          {% else %}
+            <span class="adm-badge-inactive">Inactive</span>
+          {% endif %}
+        </td>
+        <td>
+          <div class="adm-actions-cell">
+            <a class="adm-btn adm-btn-edit" href="{% url 'admin_course_edit' course.pk %}" id="edit-course-{{ course.pk }}">Edit</a>
+            <button class="adm-btn adm-btn-delete" type="button" id="delete-course-btn-{{ course.pk }}"
+                    onclick="confirmCourseDelete({{ course.pk }}, '{{ course.name|escapejs }}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="adm-empty">
+    <div style="font-size:3rem;margin-bottom:.75rem;">&#x1F4DA;</div>
+    <h3>No courses yet</h3>
+    <p>Click "Add New Course" to create the first course.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="adm-modal-overlay" id="courseDeleteModal" role="dialog" aria-modal="true" aria-labelledby="courseDeleteTitle">
+  <div class="adm-modal">
+    <div class="adm-modal-icon">&#x26A0;&#xFE0F;</div>
+    <h3 id="courseDeleteTitle">Delete Course?</h3>
+    <p>This will permanently delete <strong id="courseDeleteName"></strong> and may affect existing applications linked to it.</p>
+    <div class="adm-modal-actions">
+      <button class="adm-btn" type="button" style="background:#334155;color:#e2e8f0" onclick="closeCourseDeleteModal()">Cancel</button>
+      <form id="courseDeleteForm" method="post" style="margin:0">
+        {% csrf_token %}
+        <button class="adm-btn" style="background:#ef4444;color:#fff" type="submit">Delete permanently</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function searchCourses(q) {
+    const query = q.trim().toLowerCase();
+    document.querySelectorAll('#courseBody tr').forEach(row => {
+      row.style.display = !query || row.dataset.search.includes(query) ? '' : 'none';
+    });
+  }
+  function confirmCourseDelete(id, name) {
+    document.getElementById('courseDeleteName').textContent = name;
+    document.getElementById('courseDeleteForm').action = '/college/courses/' + id + '/delete/';
+    document.getElementById('courseDeleteModal').classList.add('active');
+  }
+  function closeCourseDeleteModal() {
+    document.getElementById('courseDeleteModal').classList.remove('active');
+  }
+  document.getElementById('courseDeleteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeCourseDeleteModal();
+  });
+</script>
+{% endblock %}

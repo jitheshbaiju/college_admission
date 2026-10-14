@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Admission Application{% endblock %}
+{% block meta_description %}Complete your online admission application.{% endblock %}
+
+{% block content %}
+<section class="admission-banner" aria-labelledby="application-title">
+    <div class="admission-container">
+        <span class="admission-kicker">ONLINE ADMISSION</span>
+        <h1 id="application-title">Your Application</h1>
+        <nav class="admission-breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span aria-hidden="true">/</span>
+            <a href="{% url 'admission' %}">Admission</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">Application</span>
+        </nav>
+    </div>
+</section>
+
+<section class="application-panel admission-container">
+    <div class="application-panel-heading">
+        <span class="admission-kicker">STEP 1 OF 3</span>
+        <h2>Tell us about your application</h2>
+        <p>Choose your program, provide your contact and academic details, and select how you plan to pay the course fee.</p>
+    </div>
+    {% if messages %}
+        {% for message in messages %}
+        <p class="application-message">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <form method="post" enctype="multipart/form-data" class="application-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="application-errors">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+        {% if field.name != "payment_option" %}
+        <div class="application-field"
+            {% if field.name == "twelfth_certificate" %}data-twelfth-certificate-field hidden{% endif %}
+            {% if field.name == "caste_certificate" %}data-caste-certificate-field hidden{% endif %}>
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+            {% if field.errors %}<div class="application-errors">{{ field.errors }}</div>{% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        <fieldset class="application-field">
+            <legend>{{ form.payment_option.label }}</legend>
+            <p>Select how you plan to pay the course fee. There is no separate admission registration or service charge.</p>
+            {{ form.payment_option }}
+            {% if form.payment_option.errors %}<div class="application-errors">{{ form.payment_option.errors }}</div>{% endif %}
+            <p>For direct payment, pay at the college fees office and keep the receipt issued by the college. Direct payments are not recorded in this website.</p>
+        </fieldset>
+
+        <div class="application-form-actions">
+            <button class="admission-button admission-button-primary" type="submit">Submit Application <span aria-hidden="true">&rarr;</span></button>
+            <a class="admission-secondary-link" href="{% url 'admission' %}">Back to admission information</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    const courseSelect = document.getElementById("id_course");
+    const twelfthCertificateField = document.querySelector("[data-twelfth-certificate-field]");
+    const categorySelect = document.getElementById("id_category");
+    const casteCertificateField = document.querySelector("[data-caste-certificate-field]");
+
+    if (courseSelect && twelfthCertificateField) {
+        const diplomaCourseIds = new Set(
+            (courseSelect.dataset.diplomaCourseIds || "").split(",").filter(Boolean)
+        );
+        const twelfthCertificateInput = twelfthCertificateField.querySelector("input");
+
+        const updateTwelfthCertificateRequirement = () => {
+            const isDiplomaCourse = diplomaCourseIds.has(courseSelect.value);
+            twelfthCertificateField.hidden = isDiplomaCourse;
+            twelfthCertificateInput.required = !isDiplomaCourse;
+            if (isDiplomaCourse) {
+                twelfthCertificateInput.value = "";
+            }
+        };
+
+        courseSelect.addEventListener("change", updateTwelfthCertificateRequirement);
+        updateTwelfthCertificateRequirement();
+    }
+
+    if (categorySelect && casteCertificateField) {
+        const requiredCategories = new Set(
+            (categorySelect.dataset.casteCertificateCategories || "").split(",").filter(Boolean)
+        );
+        const casteCertificateInput = casteCertificateField.querySelector("input");
+
+        const updateCasteCertificateRequirement = () => {
+            const isRequired = requiredCategories.has(categorySelect.value);
+            casteCertificateField.hidden = !isRequired;
+            casteCertificateInput.required = isRequired;
+            if (!isRequired) {
+                casteCertificateInput.value = "";
+            }
+        };
+
+        categorySelect.addEventListener("change", updateCasteCertificateRequirement);
+        updateCasteCertificateRequirement();
+    }
+</script>
+{% endblock %}

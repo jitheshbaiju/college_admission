@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Logout | Student Portal{% endblock %}
+{% block meta_description %}Confirm logout from your student account securely and return to the website home page.{% endblock %}
+
+{% block content %}
+<section class="logout-page py-5">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-50">
+            <div class="col-lg-5 col-md-7 col-sm-10">
+                <div class="card logout-card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <div class="logout-icon-wrap mx-auto mb-3">
+                                <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                                    <circle cx="32" cy="32" r="29" class="logout-icon-bg"></circle>
+                                    <path d="M25 22v-5c0-2.2 1.8-4 4-4h12c2.2 0 4 1.8 4 4v26c0 2.2-1.8 4-4 4H29c-2.2 0-4-1.8-4-4v-5" class="logout-icon-line"></path>
+                                    <path d="M23 31h16" class="logout-icon-line"></path>
+                                    <path d="M29 25l-8 6 8 6" class="logout-icon-line"></path>
+                                </svg>
+                            </div>
+                            <span class="student-login-form-kicker">SECURE SESSION</span>
+                            <h1 class="logout-title mt-3 mb-3">Are You Sure You Want to Logout?</h1>
+                            <p class="logout-description mb-0">You are about to log out of your student account. Make sure your admission application progress is saved before leaving.</p>
+                        </div>
+
+                        <form method="post" action="{% url 'logout' %}" class="logout-form">
+                            {% csrf_token %}
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-primary btn-lg rounded-pill logout-submit-btn">Yes, Logout</button>
+                                <a href="{% url 'admission_dashboard' %}" class="btn btn-outline-secondary btn-lg rounded-pill cancel-btn">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

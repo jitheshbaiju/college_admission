@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} — Admin{% endblock %}
+{% block meta_description %}{% if is_edit %}Edit course details in the college portal.{% else %}Add a new course to the college portal.{% endif %}{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --adm-bg: #0f1117; --adm-card: #21253a; --adm-surface: #1a1d27;
+    --adm-border: rgba(255,255,255,.08); --adm-accent: #6c63ff;
+    --adm-green: #22c55e; --adm-red: #ef4444; --adm-text: #e2e8f0; --adm-muted: #94a3b8;
+  }
+  body { background: var(--adm-bg); color: var(--adm-text); }
+
+  .adm-hero {
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    padding: 2.5rem 2rem 2rem; text-align: center;
+    border-bottom: 1px solid var(--adm-border);
+  }
+  .adm-hero .badge-pill {
+    display: inline-block; background: rgba(108,99,255,.2);
+    border: 1px solid rgba(108,99,255,.4); color: #a5b4fc;
+    font-size: .7rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; padding: .3em .9em; border-radius: 999px; margin-bottom: .75rem;
+  }
+  .adm-hero h1 { font-size: clamp(1.4rem,3vw,2.1rem); font-weight: 800; color: #fff; margin: 0 0 .3rem; }
+  .adm-hero p  { color: #94a3b8; margin: 0; font-size: .9rem; }
+
+  /* Form wrapper */
+  .adm-form-wrap {
+    max-width: 800px; margin: 2rem auto 4rem; padding: 0 2rem;
+  }
+  .adm-form-card {
+    background: var(--adm-card); border: 1px solid var(--adm-border);
+    border-radius: 18px; padding: 2rem 2.5rem;
+  }
+  .adm-section-label {
+    font-size: .72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--adm-accent); margin: 1.75rem 0 1rem;
+    padding-bottom: .5rem; border-bottom: 1px solid var(--adm-border);
+  }
+  .adm-section-label:first-child { margin-top: 0; }
+
+  /* Grid layout */
+  .adm-form-row { display: grid; gap: 1rem 1.25rem; }
+  .adm-form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .adm-form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  /* Field */
+  .adm-field { display: flex; flex-direction: column; gap: .4rem; }
+  .adm-field label {
+    font-size: .8rem; font-weight: 600; color: var(--adm-muted);
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+  .adm-field label .required { color: #ef4444; margin-left: .15em; }
+
+  /* Inputs */
+  .adm-form-control {
+    background: var(--adm-surface); border: 1px solid var(--adm-border);
+    color: var(--adm-text); border-radius: 10px; padding: .6rem .9rem;
+    font-size: .9rem; width: 100%; outline: none; transition: border-color .2s, box-shadow .2s;
+    font-family: inherit;
+  }
+  .adm-form-control:focus {
+    border-color: var(--adm-accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,.2);
+  }
+  select.adm-form-control { cursor: pointer; }
+  textarea.adm-form-control { resize: vertical; min-height: 90px; }
+  .adm-form-control::placeholder { color: #475569; }
+
+  /* Errors */
+  .adm-field-error { font-size: .78rem; color: var(--adm-red); margin-top: .15rem; }
+  .adm-form-control.is-invalid { border-color: var(--adm-red); }
+
+  /* Checkbox row */
+  .adm-checkbox-row {
+    display: flex; align-items: center; gap: .6rem;
+    background: var(--adm-surface); border: 1px solid var(--adm-border);
+    border-radius: 10px; padding: .75rem 1rem;
+  }
+  .adm-form-check { width: 18px; height: 18px; accent-color: var(--adm-accent); cursor: pointer; }
+  .adm-checkbox-row label { font-size: .88rem; color: var(--adm-text); font-weight: 500; margin: 0; cursor: pointer; text-transform: none; letter-spacing: 0; }
+
+  /* Buttons */
+  .adm-form-footer {
+    display: flex; gap: .75rem; justify-content: flex-end;
+    margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--adm-border);
+    flex-wrap: wrap;
+  }
+  .adm-btn {
+    display: inline-flex; align-items: center; gap: .4em;
+    padding: .55rem 1.4rem; border-radius: 10px; font-size: .88rem;
+    font-weight: 700; border: none; cursor: pointer;
+    transition: filter .15s, transform .15s; text-decoration: none; line-height: 1;
+  }
+  .adm-btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
+  .adm-btn-primary { background: var(--adm-accent); color: #fff; }
+  .adm-btn-secondary { background: #334155; color: #e2e8f0; }
+  .adm-btn-delete {
+    background: rgba(239,68,68,.15);
+    color: var(--adm-red);
+    border: 1px solid rgba(239,68,68,.35);
+  }
+  .adm-btn-delete:hover {
+    background: var(--adm-red);
+    color: #fff;
+    filter: none;
+  }
+
+  /* Modal */
+  .adm-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(4px);
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+  }
+  .adm-modal-overlay.active { display: flex; }
+  .adm-modal {
+    background: var(--adm-card);
+    border: 1px solid var(--adm-border);
+    border-radius: 18px;
+    padding: 2rem;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,.6);
+    animation: modalIn .25s ease;
+  }
+  @keyframes modalIn { from { opacity:0; transform:scale(.92); } to { opacity:1; transform:scale(1); } }
+  .adm-modal-icon { font-size: 3rem; margin-bottom: .75rem; }
+  .adm-modal h3 { font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: .5rem; }
+  .adm-modal p  { color: var(--adm-muted); font-size: .88rem; margin-bottom: 1.5rem; }
+  .adm-modal-actions { display: flex; gap: .75rem; justify-content: center; }
+
+  @media (max-width:640px) {
+    .adm-form-wrap { padding: 0 1rem; }
+    .adm-form-card { padding: 1.5rem 1.25rem; }
+    .adm-form-row.cols-2,
+    .adm-form-row.cols-3 { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="adm-hero">
+  <div class="badge-pill">{% if is_edit %}&#x270F;&#xFE0F; Edit Course{% else %}&#x2795; New Course{% endif %}</div>
+  <h1 id="course-form-title">{{ page_title }}</h1>
+  <p>{% if is_edit %}Update the course details below.{% else %}Fill in the details to add a new course students can apply to.{% endif %}</p>
+</div>
+
+<div class="adm-form-wrap">
+  <div class="adm-form-card">
+    <form method="post" novalidate id="courseForm">
+      {% csrf_token %}
+
+      <!-- Section: Basic Info -->
+      <div class="adm-section-label">Basic Information</div>
+
+      <div class="adm-form-row cols-2">
+        <div class="adm-field">
+          <label for="{{ form.name.id_for_label }}">Course Name <span class="required">*</span></label>
+          {{ form.name }}
+          {% if form.name.errors %}<div class="adm-field-error">{{ form.name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="adm-field">
+          <label for="{{ form.code.id_for_label }}">Course Code <span class="required">*</span></label>
+          {{ form.code }}
+          {% if form.code.errors %}<div class="adm-field-error">{{ form.code.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="adm-form-row cols-3" style="margin-top:1rem">
+        <div class="adm-field">
+          <label for="{{ form.category.id_for_label }}">Category <span class="required">*</span></label>
+          {{ form.category }}
+          {% if form.category.errors %}<div class="adm-field-error">{{ form.category.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="adm-field">
+          <label for="{{ form.department.id_for_label }}">Department <span class="required">*</span></label>
+          {{ form.department }}
+          {% if form.department.errors %}<div class="adm-field-error">{{ form.department.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="adm-field">
+          <label for="{{ form.duration.id_for_label }}">Duration <span class="required">*</span></label>
+          {{ form.duration }}
+          {% if form.duration.errors %}<div class="adm-field-error">{{ form.duration.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <!-- Section: Eligibility & Description -->
+      <div class="adm-section-label" style="margin-top:1.75rem">Eligibility &amp; Description</div>
+
+      <div class="adm-form-row" style="margin-bottom:1rem">
+        <div class="adm-field">
+          <label for="{{ form.eligibility.id_for_label }}">Eligibility Criteria <span class="required">*</span></label>
+          {{ form.eligibility }}
+          {% if form.eligibility.errors %}<div class="adm-field-error">{{ form.eligibility.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="adm-form-row">
+        <div class="adm-field">
+          <label for="{{ form.description.id_for_label }}">Description <span class="required">*</span></label>
+          {{ form.description }}
+          {% if form.description.errors %}<div class="adm-field-error">{{ form.description.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <!-- Section: Fees & Seats -->
+      <div class="adm-section-label" style="margin-top:1.75rem">Fees &amp; Seats</div>
+
+      <div class="adm-form-row cols-2">
+        <div class="adm-field">
+          <label for="{{ form.fees.id_for_label }}">Course Fee (INR)</label>
+          {{ form.fees }}
+          {% if form.fees.errors %}<div class="adm-field-error">{{ form.fees.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="adm-field">
+          <label for="{{ form.available_seats.id_for_label }}">Available Seats</label>
+          {{ form.available_seats }}
+          {% if form.available_seats.errors %}<div class="adm-field-error">{{ form.available_seats.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <!-- Section: Media & Status -->
+      <div class="adm-section-label" style="margin-top:1.75rem">Media &amp; Status</div>
+
+      <div class="adm-form-row" style="margin-bottom:1rem">
+        <div class="adm-field">
+          <label for="{{ form.image_url.id_for_label }}">Cover Image URL</label>
+          {{ form.image_url }}
+          {% if form.image_url.errors %}<div class="adm-field-error">{{ form.image_url.errors.0 }}</div>{% endif %}
+          <small style="color:var(--adm-muted);font-size:.76rem;">Optional: paste a public image URL to show on the courses page.</small>
+        </div>
+      </div>
+
+      <div class="adm-checkbox-row">
+        {{ form.is_active }}
+        <label for="{{ form.is_active.id_for_label }}">Active — visible to students on the Courses page and in application forms</label>
+      </div>
+      {% if form.is_active.errors %}<div class="adm-field-error" style="margin-top:.3rem">{{ form.is_active.errors.0 }}</div>{% endif %}
+
+      <!-- Non-field errors -->
+      {% if form.non_field_errors %}
+        <div style="color:var(--adm-red);font-size:.85rem;margin-top:1rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);padding:.75rem 1rem;border-radius:8px;">
+          {% for err in form.non_field_errors %}{{ err }}{% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Footer -->
+      <div class="adm-form-footer">
+        <a class="adm-btn adm-btn-secondary" href="{% url 'admin_course_list' %}">Cancel</a>
+        {% if is_edit %}
+        <button class="adm-btn adm-btn-delete" type="button" id="delete-course-btn" onclick="openCourseDeleteModal()">
+          &#x1F5D1;&#xFE0F; Delete Course
+        </button>
+        {% endif %}
+        <button class="adm-btn adm-btn-primary" type="submit" id="save-course-btn">
+          {% if is_edit %}Save Changes{% else %}Add Course{% endif %}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if is_edit %}
+<!-- Delete Confirm Modal -->
+<div class="adm-modal-overlay" id="courseDeleteModal" role="dialog" aria-modal="true" aria-labelledby="courseDeleteTitle">
+  <div class="adm-modal">
+    <div class="adm-modal-icon">&#x26A0;&#xFE0F;</div>
+    <h3 id="courseDeleteTitle">Delete Course?</h3>
+    <p>This will permanently delete <strong>{{ course.name }}</strong> and its linked applications. This cannot be undone.</p>
+    <div class="adm-modal-actions">
+      <button class="adm-btn" type="button" style="background:#334155;color:#e2e8f0" onclick="closeCourseDeleteModal()">Cancel</button>
+      <form action="{% url 'admin_course_delete' course.pk %}" method="post" style="margin:0">
+        {% csrf_token %}
+        <button class="adm-btn" style="background:#ef4444;color:#fff" type="submit">Delete permanently</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  /* Mark invalid fields */
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.adm-field-error').forEach(function (el) {
+      const field = el.previousElementSibling;
+      if (field && field.classList.contains('adm-form-control')) {
+        field.classList.add('is-invalid');
+      }
+    });
+  });
+
+  function openCourseDeleteModal() {
+    const modal = document.getElementById('courseDeleteModal');
+    if (modal) modal.classList.add('active');
+  }
+  function closeCourseDeleteModal() {
+    const modal = document.getElementById('courseDeleteModal');
+    if (modal) modal.classList.remove('active');
+  }
+  const modalEl = document.getElementById('courseDeleteModal');
+  if (modalEl) {
+    modalEl.addEventListener('click', function(e) {
+      if (e.target === this) closeCourseDeleteModal();
+    });
+  }
+</script>
+{% endblock %}

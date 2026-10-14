@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us{% endblock %}
+{% block meta_description %}Contact the admissions team with your questions about programs, applications, and enrollment.{% endblock %}
+
+{% block content %}
+<section class="contact-banner" aria-labelledby="contact-title">
+    <div class="contact-container">
+        <span class="contact-kicker">WE'RE HERE TO HELP</span>
+        <h1 id="contact-title">Contact Us</h1>
+        <p>Have questions about admission? We are here to help.</p>
+        <nav class="contact-breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">Contact</span>
+        </nav>
+    </div>
+</section>
+
+<section class="contact-details contact-container" aria-labelledby="contact-details-title">
+    <div class="contact-section-heading">
+        <span class="contact-kicker">GET IN TOUCH</span>
+        <h2 id="contact-details-title">Contact Information</h2>
+        <p>Reach out to our admissions team. We’ll be happy to answer your questions.</p>
+    </div>
+    <div class="contact-card-grid">
+        <article class="contact-info-card">
+            <span class="contact-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none"><path d="M39 20c0 11-15 23-15 23S9 31 9 20a15 15 0 1 1 30 0Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="20" r="5" stroke="currentColor" stroke-width="3"/></svg>
+            </span>
+            <h3>Address</h3>
+            <p>Institution address</p>
+        </article>
+        <article class="contact-info-card">
+            <span class="contact-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none"><path d="M15 7h18a4 4 0 0 1 4 4v26a4 4 0 0 1-4 4H15a4 4 0 0 1-4-4V11a4 4 0 0 1 4-4Z" stroke="currentColor" stroke-width="3"/><path d="M20 12h8M21 35h6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+            </span>
+            <h3>Phone</h3>
+            <p><a href="tel:+911234567890">+91 1234567890</a></p>
+        </article>
+        <article class="contact-info-card">
+            <span class="contact-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none"><rect x="6" y="10" width="36" height="28" rx="4" stroke="currentColor" stroke-width="3"/><path d="m9 14 15 12 15-12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3>Email</h3>
+            <p><a href="mailto:admission@gmail.com">admission@gmail.com</a></p>
+        </article>
+        <article class="contact-info-card">
+            <span class="contact-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="25" r="17" stroke="currentColor" stroke-width="3"/><path d="M24 15v11l7 4M18 5h12M24 5v3" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3>Office Hours</h3>
+            <p>Monday – Saturday<br>9:00 AM – 5:00 PM</p>
+        </article>
+    </div>
+</section>
+
+<section class="contact-form-section">
+    <div class="contact-container contact-form-layout">
+        <div class="contact-form-intro">
+            <span class="contact-kicker">SEND US A MESSAGE</span>
+            <h2>How can we help?</h2>
+            <p>Share your question with us using the form. Our team will review your message and get back to you.</p>
+            <div class="contact-response-note">
+                <span aria-hidden="true">✓</span>
+                <p>Your message is handled by our admissions team.</p>
+            </div>
+        </div>
+
+        <div class="contact-form-card">
+            <h2>Send a Message</h2>
+            <p class="contact-form-subtitle">Fields marked with <span aria-hidden="true">*</span> are required.</p>
+            {% if messages %}
+                {% for message in messages %}
+                <p class="contact-success" role="status">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+            <form method="post" action="{% url 'contact' %}" class="contact-form" novalidate>
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                <div class="contact-form-errors" role="alert">{{ form.non_field_errors }}</div>
+                {% endif %}
+                <div class="contact-form-grid">
+                    <div class="contact-field">
+                        <label for="{{ form.full_name.id_for_label }}">Full Name <span aria-hidden="true">*</span></label>
+                        {{ form.full_name }}
+                        {% if form.full_name.errors %}<div class="contact-form-errors" role="alert">{{ form.full_name.errors }}</div>{% endif %}
+                    </div>
+                    <div class="contact-field">
+                        <label for="{{ form.email.id_for_label }}">Email <span aria-hidden="true">*</span></label>
+                        {{ form.email }}
+                        {% if form.email.errors %}<div class="contact-form-errors" role="alert">{{ form.email.errors }}</div>{% endif %}
+                    </div>
+                    <div class="contact-field">
+                        <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}<div class="contact-form-errors" role="alert">{{ form.phone_number.errors }}</div>{% endif %}
+                    </div>
+                    <div class="contact-field">
+                        <label for="{{ form.subject.id_for_label }}">Subject <span aria-hidden="true">*</span></label>
+                        {{ form.subject }}
+                        {% if form.subject.errors %}<div class="contact-form-errors" role="alert">{{ form.subject.errors }}</div>{% endif %}
+                    </div>
+                    <div class="contact-field contact-field-full">
+                        <label for="{{ form.message.id_for_label }}">Message <span aria-hidden="true">*</span></label>
+                        {{ form.message }}
+                        {% if form.message.errors %}<div class="contact-form-errors" role="alert">{{ form.message.errors }}</div>{% endif %}
+                    </div>
+                </div>
+                <button class="contact-submit" type="submit">Send Message <span aria-hidden="true">&rarr;</span></button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Application Status{% endblock %}
+{% block meta_description %}View the decision status of your admission application.{% endblock %}
+
+{% block content %}
+<section class="admission-banner" aria-labelledby="application-status-title">
+    <div class="admission-container">
+        <span class="admission-kicker">ONLINE ADMISSION</span>
+        <h1 id="application-status-title">Application Status</h1>
+    </div>
+</section>
+
+<section class="application-status-only admission-container" aria-label="Your application status">
+    {% for application in applications %}
+    <article class="application-status-only-card">
+        <span class="application-status-only-label">Status</span>
+        {% if application.status == "accepted" %}
+            <strong class="application-status-only-value approved">Approved</strong>
+        {% elif application.status == "declined" %}
+            <strong class="application-status-only-value rejected">Rejected</strong>
+        {% else %}
+            <strong class="application-status-only-value pending">Pending</strong>
+        {% endif %}
+    </article>
+    {% empty %}
+    <p class="application-status-only-empty">No application status is available.</p>
+    {% endfor %}
+</section>
+{% endblock %}

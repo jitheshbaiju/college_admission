@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}College Admin Profile{% endblock %}
+{% block meta_description %}View the signed-in college administrator account details.{% endblock %}
+
+{% block content %}
+<section class="admission-banner" aria-labelledby="college-profile-title">
+    <div class="admission-container">
+        <span class="admission-kicker">COLLEGE ADMINISTRATION</span>
+        <h1 id="college-profile-title">College Profile</h1>
+        <p>Signed-in administrator account details.</p>
+        <nav class="admission-breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">College Profile</span>
+        </nav>
+    </div>
+</section>
+
+<div class="admission-container" style="padding-top: 24px; padding-bottom: 60px;">
+    <section class="profile-hero-card" aria-label="Administrator profile card">
+        <div class="profile-hero-main">
+            <div class="profile-avatar-circle" style="background: linear-gradient(135deg, #2b3a4a 0%, #152230 100%);" aria-hidden="true">
+                {{ request.user.first_name|first|default:request.user.username|first|upper }}
+            </div>
+            <div class="profile-hero-details">
+                <div class="profile-hero-tags">
+                    <span class="profile-badge-user">@{{ request.user.get_username }}</span>
+                    <span class="badge bg-primary" style="font-size: 12px;">Staff Administrator</span>
+                    {% if request.user.is_superuser %}<span class="badge bg-danger" style="font-size: 12px;">Superuser</span>{% endif %}
+                </div>
+                <h2>{{ request.user.get_full_name|default:request.user.get_username }}</h2>
+                <div class="profile-meta-row">
+                    <span class="profile-meta-item">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/></svg>
+                        {{ request.user.email|default:"Not provided" }}
+                    </span>
+                    <span class="profile-meta-item">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>
+                        Admin since {{ request.user.date_joined|date:"M Y" }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="profile-hero-actions">
+            <a class="admission-button admission-button-primary" href="{% url 'college_dashboard' %}">Review Student Applications <span aria-hidden="true">&rarr;</span></a>
+            <a class="admission-secondary-link" href="{% url 'admin:index' %}">Django Admin &rarr;</a>
+        </div>
+    </section>
+
+    <section class="application-panel" aria-labelledby="college-profile-details">
+        <div class="application-panel-heading">
+            <span class="admission-kicker">ADMINISTRATOR ACCOUNT</span>
+            <h2 id="college-profile-details">Profile details</h2>
+            <p>Account credentials and permissions for administrative tasks.</p>
+        </div>
+        <dl class="payment-details">
+            <div><dt>Name</dt><dd>{{ request.user.get_full_name|default:request.user.get_username }}</dd></div>
+            <div><dt>Username</dt><dd>{{ request.user.get_username }}</dd></div>
+            <div><dt>Email</dt><dd>{{ request.user.email|default:"Not provided" }}</dd></div>
+            <div><dt>Role</dt><dd>College Admissions Staff</dd></div>
+            <div><dt>Last login</dt><dd>{{ request.user.last_login|date:"M j, Y, g:i a"|default:"Active session" }}</dd></div>
+        </dl>
+    </section>
+</div>
+{% endblock %}

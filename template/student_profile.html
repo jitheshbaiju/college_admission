@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+{% block meta_description %}View and update your student account details, manage security, and review submitted admission applications.{% endblock %}
+
+{% block content %}
+<section class="admission-banner" aria-labelledby="profile-title">
+    <div class="admission-container">
+        <span class="admission-kicker">STUDENT PORTAL</span>
+        <h1 id="profile-title">My Profile</h1>
+        <p>View your account information and submitted applications.</p>
+        <nav class="admission-breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">My Profile</span>
+        </nav>
+    </div>
+</section>
+
+<div class="admission-container" style="padding-top: 24px; padding-bottom: 60px;">
+    <!-- Profile Hero Card -->
+    <section class="profile-hero-card" aria-label="Student overview">
+        <div class="profile-hero-main">
+            <div class="profile-avatar-circle" aria-hidden="true">
+                {{ request.user.first_name|first|default:request.user.username|first|upper }}
+            </div>
+            <div class="profile-hero-details">
+                <div class="profile-hero-tags">
+                    <span class="profile-badge-user">@{{ request.user.get_username }}</span>
+                    <span class="profile-badge-status">Active Student</span>
+                    {% if request.user.is_staff %}
+                    <span class="badge bg-secondary">Staff Member</span>
+                    {% endif %}
+                </div>
+                <h2>{{ request.user.get_full_name|default:request.user.get_username }}</h2>
+                <div class="profile-meta-row">
+                    <span class="profile-meta-item">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/></svg>
+                        {{ request.user.email|default:"Not provided" }}
+                    </span>
+                    <span class="profile-meta-item">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h6zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H5z"/><path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+                        {% if profile %}{{ profile.mobile_number }}{% else %}Not provided{% endif %}
+                    </span>
+                    <span class="profile-meta-item">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>
+                        Joined {{ request.user.date_joined|date:"M Y" }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="profile-hero-actions">
+            <a class="admission-button admission-button-primary" href="{% url 'admission_dashboard' %}">View Application Status <span aria-hidden="true">&rarr;</span></a>
+            <a class="admission-secondary-link" href="{% url 'admission_application' %}">Start a New Application</a>
+        </div>
+    </section>
+
+    <!-- Profile Quick Statistics -->
+    <section class="profile-stats-grid" aria-label="Application summary stats">
+        <div class="profile-stat-card">
+            <div class="profile-stat-icon stat-icon-blue" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div class="profile-stat-info">
+                <strong>{{ counts.total|default:0 }}</strong>
+                <span>Total Applications</span>
+            </div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="profile-stat-icon stat-icon-amber" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="profile-stat-info">
+                <strong>{{ counts.under_review|default:0 }}</strong>
+                <span>Under Review</span>
+            </div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="profile-stat-icon stat-icon-green" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="profile-stat-info">
+                <strong>{{ counts.accepted|default:0 }}</strong>
+                <span>Accepted</span>
+            </div>
+        </div>
+        <div class="profile-stat-card">
+            <div class="profile-stat-icon stat-icon-purple" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="profile-stat-info">
+                <strong>{{ counts.submitted|default:0 }}</strong>
+                <span>Submitted</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tabbed Navigation -->
+    <nav class="profile-nav-tabs" aria-label="Profile navigation sections">
+        <button type="button" class="profile-tab-btn {% if active_tab == 'overview' %}active{% endif %}" data-tab="overview">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Overview &amp; Applications
+        </button>
+        <button type="button" class="profile-tab-btn {% if active_tab == 'edit-profile' %}active{% endif %}" data-tab="edit-profile">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit Personal Details
+        </button>
+        <button type="button" class="profile-tab-btn {% if active_tab == 'security' %}active{% endif %}" data-tab="security">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Security &amp; Password
+        </button>
+    </nav>
+
+    <!-- TAB 1: OVERVIEW & APPLICATIONS -->
+    <div id="tab-overview" class="profile-tab-panel {% if active_tab == 'overview' %}active{% endif %}">
+        <section class="application-panel" style="margin-bottom: 28px;" aria-labelledby="profile-details-title">
+            <div class="application-panel-heading">
+                <span class="admission-kicker">ACCOUNT DETAILS</span>
+                <h2 id="profile-details-title">Your information</h2>
+                <p>Your registered account and contact details.</p>
+            </div>
+            <dl class="payment-details">
+                <div>
+                    <dt>Full name</dt>
+                    <dd>{{ request.user.get_full_name|default:request.user.get_username }}</dd>
+                </div>
+                <div>
+                    <dt>Username</dt>
+                    <dd>{{ request.user.get_username }}</dd>
+                </div>
+                <div>
+                    <dt>Email</dt>
+                    <dd>{{ request.user.email|default:"Not provided" }}</dd>
+                </div>
+                <div>
+                    <dt>Mobile number</dt>
+                    <dd>{% if profile %}{{ profile.mobile_number }}{% else %}Not provided{% endif %}</dd>
+                </div>
+            </dl>
+            <div class="application-form-actions" style="margin-top: 18px;">
+                <button type="button" class="admission-button admission-button-primary" onclick="switchProfileTab('edit-profile')">
+                    Edit Profile Details &rarr;
+                </button>
+            </div>
+        </section>
+
+        <!-- Submitted Applications List -->
+        <section class="application-dashboard" aria-labelledby="profile-applications-title">
+            <div class="dashboard-heading">
+                <div>
+                    <span class="admission-kicker">APPLICATION DETAILS</span>
+                    <h2 id="profile-applications-title">Your submitted applications</h2>
+                </div>
+                <a class="admission-secondary-link" href="{% url 'admission_dashboard' %}">Open Full Application Tracker &rarr;</a>
+            </div>
+
+            {% for application in applications %}
+            <article class="application-status-card">
+                <div>
+                    <span class="application-status-label">Application number</span>
+                    <strong>{{ application.application_number }}</strong>
+                </div>
+                <div>
+                    <span class="application-status-label">Course</span>
+                    <strong>{{ application.course.name }} ({{ application.course.code }})</strong>
+                </div>
+                <div>
+                    <span class="application-status-label">Course category</span>
+                    <strong>{{ application.course.get_category_display }}</strong>
+                </div>
+                <div>
+                    <span class="application-status-label">Department</span>
+                    <strong>{{ application.course.department }}</strong>
+                </div>
+                <div>
+                    <span class="application-status-label">Application phone</span>
+                    <strong>{{ application.phone }}</strong>
+                </div>
+                <div>
+                    <span class="application-status-label">Date of birth</span>
+                    <strong>{{ application.date_of_birth|date:"M j, Y"|default:"Not provided" }}</strong>
+                </div>
+                <div>
+                    <span class="application-status-label">Category</span>
+                    <strong>{{ application.get_category_display|default:"Not provided" }}</strong>
+                </div>
+                <div>
+                    <span class="application-status-label">Highest qualification</span>
+                    <strong>{{ application.highest_qualification }}</strong>
+                </div>
+                <div>
+                    <span class="application-status-label">Submitted</span>
+                    <strong>{{ application.submitted_at|date:"M j, Y, g:i a" }}</strong>
+                </div>
+                <div>
+                    <span class="application-status-label">Application status</span>
+                    <strong>{{ application.get_status_display }}</strong>
+                </div>
+                <div>
+                    <span class="application-status-label">Course fee</span>
+                    <strong>{% if application.course.fees != None %}INR {{ application.course.fees|floatformat:2 }}{% else %}Contact admissions{% endif %}</strong>
+                </div>
+                <div>
+                    <span class="application-status-label">Online payment</span>
+                    {% if application.payment %}
+                        <strong>{{ application.payment.get_status_display }} — INR {{ application.payment.amount|floatformat:2 }}</strong>
+                    {% else %}
+                        <strong>Not recorded online</strong>
+                    {% endif %}
+                </div>
+                <div>
+                    <span class="application-status-label">Uploaded documents</span>
+                    <div class="application-document-links">
+                        {% if application.passport_photo %}<a href="{% url 'admission_document' application.pk 'passport_photo' %}">Passport photo</a>{% endif %}
+                        {% if application.student_signature %}<a href="{% url 'admission_document' application.pk 'student_signature' %}">Student signature</a>{% endif %}
+                        {% if application.identity_proof %}<a href="{% url 'admission_document' application.pk 'identity_proof' %}">Identity proof</a>{% endif %}
+                        {% if application.tenth_certificate %}<a href="{% url 'admission_document' application.pk 'tenth_certificate' %}">10th certificate</a>{% endif %}
+                        {% if application.twelfth_certificate %}<a href="{% url 'admission_document' application.pk 'twelfth_certificate' %}">12th certificate</a>{% endif %}
+                        {% if application.transfer_certificate %}<a href="{% url 'admission_document' application.pk 'transfer_certificate' %}">Transfer certificate</a>{% endif %}
+                        {% if application.conduct_certificate %}<a href="{% url 'admission_document' application.pk 'conduct_certificate' %}">Conduct certificate</a>{% endif %}
+                        {% if application.caste_certificate %}<a href="{% url 'admission_document' application.pk 'caste_certificate' %}">Caste certificate</a>{% endif %}
+                        {% if not application.passport_photo and not application.student_signature and not application.identity_proof and not application.tenth_certificate and not application.twelfth_certificate and not application.transfer_certificate and not application.conduct_certificate and not application.caste_certificate %}
+                            <span>No documents uploaded</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if application.payment %}
+                    {% if application.payment.status == "successful" %}
+                        <a class="admission-secondary-link" href="{% url 'payment_receipt' application.payment.pk %}">Download course-fee receipt</a>
+                    {% elif application.payment.status == "pending" or application.payment.status == "failed" %}
+                        <a class="admission-button admission-button-primary" href="{% url 'payment' application.pk %}">Continue online payment</a>
+                    {% endif %}
+                {% else %}
+                    <p class="application-payment-note">Online payment has not been recorded. If you paid directly at the college, keep your college receipt.</p>
+                {% endif %}
+            </article>
+            {% empty %}
+            <div class="course-empty-state">
+                <h3>No application details yet</h3>
+                <p>Your submitted course, personal details, application status, and document links will appear here after you apply.</p>
+                <a class="admission-button admission-button-primary" href="{% url 'admission_application' %}">Start an Application <span aria-hidden="true">&rarr;</span></a>
+            </div>
+            {% endfor %}
+        </section>
+    </div>
+
+    <!-- TAB 2: EDIT PROFILE -->
+    <div id="tab-edit-profile" class="profile-tab-panel {% if active_tab == 'edit-profile' %}active{% endif %}">
+        <section class="profile-edit-card" aria-labelledby="edit-profile-title">
+            <div class="profile-card-header">
+                <span class="admission-kicker">PERSONAL INFORMATION</span>
+                <h3 id="edit-profile-title">Update Your Profile Details</h3>
+                <p>Keep your name, email, and phone number updated so the admissions office can reach you with updates.</p>
+            </div>
+
+            <form method="post" action="{% url 'student_profile' %}" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_profile">
+
+                {% if profile_form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in profile_form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="profile-form-grid">
+                    <div class="profile-form-group">
+                        <label for="{{ profile_form.first_name.id_for_label }}">First Name <span class="text-danger">*</span></label>
+                        {{ profile_form.first_name }}
+                        {% if profile_form.first_name.errors %}
+                        <div class="profile-field-error">{{ profile_form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="profile-form-group">
+                        <label for="{{ profile_form.last_name.id_for_label }}">Last Name</label>
+                        {{ profile_form.last_name }}
+                        {% if profile_form.last_name.errors %}
+                        <div class="profile-field-error">{{ profile_form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="profile-form-group">
+                        <label for="{{ profile_form.email.id_for_label }}">Email Address <span class="text-danger">*</span></label>
+                        {{ profile_form.email }}
+                        {% if profile_form.email.errors %}
+                        <div class="profile-field-error">{{ profile_form.email.errors.0 }}</div>
+                        {% endif %}
+                        <small class="text-muted" style="font-size: 11px;">Used for admission letters and notifications.</small>
+                    </div>
+
+                    <div class="profile-form-group">
+                        <label for="{{ profile_form.mobile_number.id_for_label }}">Mobile Number <span class="text-danger">*</span></label>
+                        {{ profile_form.mobile_number }}
+                        {% if profile_form.mobile_number.errors %}
+                        <div class="profile-field-error">{{ profile_form.mobile_number.errors.0 }}</div>
+                        {% endif %}
+                        <small class="text-muted" style="font-size: 11px;">8 to 15 digits with optional country code.</small>
+                    </div>
+
+                    <div class="profile-form-group profile-form-full">
+                        <label>Account Username</label>
+                        <input type="text" class="form-control" value="{{ request.user.username }}" disabled readonly style="background-color: #f6f9fc;">
+                        <small class="text-muted" style="font-size: 11px;">Your username cannot be changed.</small>
+                    </div>
+                </div>
+
+                <div class="application-form-actions">
+                    <button type="submit" class="admission-button admission-button-primary">Save Profile Changes</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="switchProfileTab('overview')">Cancel</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <!-- TAB 3: SECURITY & PASSWORD -->
+    <div id="tab-security" class="profile-tab-panel {% if active_tab == 'security' %}active{% endif %}">
+        <section class="profile-security-card" aria-labelledby="security-title">
+            <div class="profile-card-header">
+                <span class="admission-kicker">ACCOUNT SECURITY</span>
+                <h3 id="security-title">Change Your Password</h3>
+                <p>Choose a strong password with at least 8 characters to protect your account and application documents.</p>
+            </div>
+
+            <form method="post" action="{% url 'student_profile' %}" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_password">
+
+                {% if password_form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in password_form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="profile-form-grid" style="grid-template-columns: 1fr; max-width: 520px;">
+                    <div class="profile-form-group">
+                        <label for="{{ password_form.old_password.id_for_label }}">Current Password <span class="text-danger">*</span></label>
+                        {{ password_form.old_password }}
+                        {% if password_form.old_password.errors %}
+                        <div class="profile-field-error">{{ password_form.old_password.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="profile-form-group">
+                        <label for="{{ password_form.new_password1.id_for_label }}">New Password <span class="text-danger">*</span></label>
+                        {{ password_form.new_password1 }}
+                        {% if password_form.new_password1.errors %}
+                        <div class="profile-field-error">{{ password_form.new_password1.errors.0 }}</div>
+                        {% endif %}
+                        <small class="text-muted" style="font-size: 11px;">Must be at least 8 characters long.</small>
+                    </div>
+
+                    <div class="profile-form-group">
+                        <label for="{{ password_form.new_password2.id_for_label }}">Confirm New Password <span class="text-danger">*</span></label>
+                        {{ password_form.new_password2 }}
+                        {% if password_form.new_password2.errors %}
+                        <div class="profile-field-error">{{ password_form.new_password2.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="application-form-actions">
+                    <button type="submit" class="admission-button admission-button-primary">Update Password</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="switchProfileTab('overview')">Cancel</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+<script>
+function switchProfileTab(tabName) {
+    document.querySelectorAll('.profile-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
+    document.querySelectorAll('.profile-tab-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === 'tab-' + tabName);
+    });
+    if (history.pushState) {
+        history.pushState(null, null, '#' + tabName);
+    } else {
+        location.hash = '#' + tabName;
+    }
+}
+
+document.querySelectorAll('.profile-tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        switchProfileTab(this.dataset.tab);
+    });
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById('tab-' + hash)) {
+        switchProfileTab(hash);
+    }
+});
+</script>
+{% endblock %}

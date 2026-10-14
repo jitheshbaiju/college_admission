@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Courses &amp; Programs{% endblock %}
+{% block meta_description %}Explore undergraduate, postgraduate, diploma, and certificate programs and find the course that fits your future.{% endblock %}
+
+{% block content %}
+<section class="courses-banner" aria-labelledby="courses-title">
+    <div class="courses-container">
+        <span class="courses-kicker">LEARN WITH PURPOSE</span>
+        <h1 id="courses-title">Courses &amp; Programs</h1>
+        <p>Explore our academic programs and choose the right path for your future.</p>
+        <nav class="courses-breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">Courses</span>
+        </nav>
+    </div>
+</section>
+
+<section class="courses-listing courses-container" aria-labelledby="course-list-title">
+    <div class="courses-heading">
+        <div>
+            <span class="courses-kicker">FIND YOUR NEXT STEP</span>
+            <h2 id="course-list-title">Explore Our Programs</h2>
+        </div>
+        <p>Compare program details, entry requirements, and study options to find the right fit.</p>
+    </div>
+
+    <div class="course-filters" role="group" aria-label="Filter courses by category">
+        <button class="course-filter is-active" type="button" data-course-filter="all" aria-pressed="true">All</button>
+        <button class="course-filter" type="button" data-course-filter="undergraduate" aria-pressed="false">Undergraduate</button>
+        <button class="course-filter" type="button" data-course-filter="postgraduate" aria-pressed="false">Postgraduate</button>
+        <button class="course-filter" type="button" data-course-filter="diploma" aria-pressed="false">Diploma</button>
+        <button class="course-filter" type="button" data-course-filter="certificate" aria-pressed="false">Certificate</button>
+    </div>
+
+    <p class="course-results-count" aria-live="polite">
+        Showing <strong>{{ courses|length }}</strong> program{{ courses|length|pluralize }}
+    </p>
+
+    <div class="course-catalog">
+        {% for course in courses %}
+        <article class="program-card" id="course-{{ course.pk }}" data-course-card data-category="{{ course.category }}">
+            <div class="program-card-media">
+                {% if course.image_url %}
+                <img src="{{ course.image_url }}" alt="{{ course.name }} program" loading="lazy">
+                {% else %}
+                <div class="program-card-placeholder" aria-hidden="true">
+                    <span class="program-placeholder-code">{{ course.code|slice:":3" }}</span>
+                    <svg viewBox="0 0 120 100" fill="none">
+                        <path d="M18 77h84M28 77V43l32-19 32 19v34M43 77V55h34v22M25 43h70" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="m15 44 45-27 45 27" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                {% endif %}
+                <span class="program-category-tag">{{ course.get_category_display }}</span>
+            </div>
+            <div class="program-card-content">
+                <div class="program-card-title">
+                    <div>
+                        <span class="program-code">{{ course.code }}</span>
+                        <h3>{{ course.name }}</h3>
+                    </div>
+                    <span class="program-department">{{ course.department }}</span>
+                </div>
+                <div class="program-card-actions">
+                    <a class="program-button program-button-secondary" href="{% url 'course_detail' course.pk %}">View Details</a>
+                    <a class="program-button program-button-primary" href="{% url 'admission_application' %}">Apply Now <span aria-hidden="true">&rarr;</span></a>
+                </div>
+            </div>
+        </article>
+        {% empty %}
+        <div class="course-empty-state">
+            <span class="course-empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none"><path d="M7 17 24 8l17 9-17 9-17-9Zm5 4v10c7 6 17 6 24 0V21M41 18v13" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3>Programs are being added</h3>
+            <p>Please check back soon or contact admissions for current program information.</p>
+            <a class="program-button program-button-primary" href="{% url 'contact' %}">Contact Admissions <span aria-hidden="true">&rarr;</span></a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <p class="course-filter-empty" data-filter-empty hidden>No programs match this category. Choose another category to see available programs.</p>
+</section>
+
+<section class="courses-cta">
+    <div class="courses-container courses-cta-inner">
+        <div>
+            <span class="courses-kicker">YOUR FUTURE STARTS HERE</span>
+            <h2>Found a program that fits?</h2>
+            <p>Take the next step and start your application today.</p>
+        </div>
+        <a class="program-button program-button-light" href="{% url 'admission_application' %}">Apply Now <span aria-hidden="true">&rarr;</span></a>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'script.js' %}" defer></script>
+{% endblock %}

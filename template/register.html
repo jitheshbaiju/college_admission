@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Create Your Student Account{% endblock %}
+{% block meta_description %}Create a student account to begin your online admission application.{% endblock %}
+
+{% block content %}
+<section class="student-register-page" aria-labelledby="student-register-title">
+    <div class="student-register-card">
+        <div class="auth-toggle-group" role="tablist" aria-label="Account access options">
+            <a href="{% url 'login' %}" class="auth-toggle-btn" role="tab" aria-selected="false">Student Login</a>
+            <a href="{% url 'register' %}" class="auth-toggle-btn active" role="tab" aria-selected="true">Create Account</a>
+        </div>
+        <div class="student-register-heading">
+            <span class="student-login-form-kicker">STUDENT PORTAL</span>
+            <h1 id="student-register-title">Create Your Student Account</h1>
+            <p>Register to start your online admission application.</p>
+        </div>
+
+        {% if form.non_field_errors %}
+        <div class="student-register-error" role="alert">
+            {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'register' %}" class="student-register-form" novalidate>
+            {% csrf_token %}
+            <div class="student-register-field">
+                <label for="{{ form.full_name.id_for_label }}">Full Name <span aria-hidden="true">*</span></label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}<div class="student-register-field-error" role="alert">{{ form.full_name.errors }}</div>{% endif %}
+            </div>
+
+            <div class="student-register-field">
+                <label for="{{ form.email.id_for_label }}">Email <span aria-hidden="true">*</span></label>
+                {{ form.email }}
+                {% if form.email.errors %}<div class="student-register-field-error" role="alert">{{ form.email.errors }}</div>{% endif %}
+            </div>
+
+            <div class="student-register-field">
+                <label for="{{ form.mobile_number.id_for_label }}">Mobile Number <span aria-hidden="true">*</span></label>
+                {{ form.mobile_number }}
+                {% if form.mobile_number.errors %}<div class="student-register-field-error" role="alert">{{ form.mobile_number.errors }}</div>{% endif %}
+            </div>
+
+            <div class="student-register-field">
+                <label for="{{ form.password1.id_for_label }}">Password <span aria-hidden="true">*</span></label>
+                {{ form.password1 }}
+                <small>Use at least 8 characters. Your password must also meet the security checks shown if it is rejected.</small>
+                {% if form.password1.errors %}<div class="student-register-field-error" role="alert">{{ form.password1.errors }}</div>{% endif %}
+            </div>
+
+            <div class="student-register-field">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password <span aria-hidden="true">*</span></label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}<div class="student-register-field-error" role="alert">{{ form.password2.errors }}</div>{% endif %}
+            </div>
+
+            <div class="student-register-terms">
+                <label for="{{ form.terms_accepted.id_for_label }}">
+                    {{ form.terms_accepted }}
+                    <span>I agree to the <strong>Terms &amp; Conditions</strong> and <strong>Privacy Policy</strong>.</span>
+                </label>
+                {% if form.terms_accepted.errors %}<div class="student-register-field-error" role="alert">{{ form.terms_accepted.errors }}</div>{% endif %}
+            </div>
+
+            <button class="student-register-submit" type="submit">Create Account <span aria-hidden="true">&rarr;</span></button>
+        </form>
+
+        <p class="student-register-login">Already have an account? <a href="{% url 'login' %}?next={% url 'admission_application' %}">Login</a></p>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (() => {
+        const form = document.querySelector(".student-register-form");
+        if (!form) return;
+
+        const fullName = form.querySelector("#id_full_name");
+        const email = form.querySelector("#id_email");
+        const mobile = form.querySelector("#id_mobile_number");
+        const password = form.querySelector("#id_password1");
+        const confirmPassword = form.querySelector("#id_password2");
+        const terms = form.querySelector("#id_terms_accepted");
+
+        form.addEventListener("submit", (event) => {
+            [fullName, email, mobile, password, confirmPassword, terms].forEach((field) => {
+                field.setCustomValidity("");
+            });
+
+            if (!fullName.value.trim()) {
+                fullName.setCustomValidity("Enter your full name.");
+            } else if (!email.value.trim() || !email.validity.valid) {
+                email.setCustomValidity("Enter a valid email address.");
+            } else if (!mobile.value.trim()) {
+                mobile.setCustomValidity("Enter your mobile number.");
+            } else {
+                const digitCount = mobile.value.replace(/\D/g, "").length;
+                if (!/^\+?[0-9][0-9\s().-]*$/.test(mobile.value) || digitCount < 8 || digitCount > 15) {
+                    mobile.setCustomValidity("Enter a valid phone number with 8 to 15 digits.");
+                }
+            }
+
+            if (!password.value) {
+                password.setCustomValidity("Enter a password.");
+            } else if (password.value.length < 8) {
+                password.setCustomValidity("Your password must contain at least 8 characters.");
+            }
+
+            if (confirmPassword.value !== password.value) {
+                confirmPassword.setCustomValidity("The passwords do not match.");
+            }
+
+            if (!terms.checked) {
+                terms.setCustomValidity("Accept the Terms & Conditions and Privacy Policy to continue.");
+            }
+
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                form.reportValidity();
+            }
+        });
+
+        form.addEventListener("input", (event) => {
+            if (event.target.matches("input")) {
+                event.target.setCustomValidity("");
+                if (event.target === password) {
+                    confirmPassword.setCustomValidity("");
+                }
+            }
+        });
+    })();
+</script>
+{% endblock %}

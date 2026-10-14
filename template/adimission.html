@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Online Admission{% endblock %}
+{% block meta_description %}Learn about eligibility, required documents, and how to apply online for admission.{% endblock %}
+
+{% block content %}
+<section class="admission-banner" aria-labelledby="admission-title">
+    <div class="admission-container">
+        <span class="admission-kicker">YOUR NEXT CHAPTER STARTS HERE</span>
+        <h1 id="admission-title">Online Admission</h1>
+        <p>Complete your admission application online quickly and securely.</p>
+        <nav class="admission-breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">Admission</span>
+        </nav>
+    </div>
+</section>
+
+<section class="admission-process admission-container" aria-labelledby="admission-process-title">
+    <div class="admission-section-heading">
+        <span class="admission-kicker">SIX SIMPLE STEPS</span>
+        <h2 id="admission-process-title">Admission Process</h2>
+        <p>Follow each step to complete and track your application.</p>
+    </div>
+    <ol class="admission-steps">
+        <li><span class="admission-step-number">1</span><span class="admission-step-label">Register Account</span></li>
+        <li><span class="admission-step-number">2</span><span class="admission-step-label">Login</span></li>
+        <li><span class="admission-step-number">3</span><span class="admission-step-label">Fill Application</span></li>
+        <li><span class="admission-step-number">4</span><span class="admission-step-label">Upload Documents</span></li>
+        <li><span class="admission-step-number">5</span><span class="admission-step-label">Submit Application</span></li>
+        <li><span class="admission-step-number">6</span><span class="admission-step-label">Check Application Status</span></li>
+    </ol>
+</section>
+
+<section class="admission-information">
+    <div class="admission-container">
+        <div class="admission-section-heading">
+            <span class="admission-kicker">BEFORE YOU APPLY</span>
+            <h2>Admission Information</h2>
+            <p>Prepare in advance to make your application clear and complete.</p>
+        </div>
+        <div class="admission-info-grid">
+            <article class="admission-info-card">
+                <span class="admission-info-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none"><path d="M24 5 39 11v11c0 10-6 17-15 21C15 39 9 32 9 22V11l15-6Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="m17 24 5 5 10-11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <h3>Eligibility</h3>
+                <p>Applicants should meet the academic qualification specified for their chosen program. Undergraduate programs generally require successful completion of 12th grade or an equivalent qualification. Program-specific prerequisites may apply, so review the course details before applying.</p>
+                <a href="{% url 'courses' %}">Review program requirements <span aria-hidden="true">&rarr;</span></a>
+            </article>
+
+            <article class="admission-info-card admission-documents-card">
+                <span class="admission-info-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none"><path d="M12 6h17l8 8v28H12V6Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M28 7v9h9M18 25h13M18 32h13" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                </span>
+                <h3>Required Documents</h3>
+                <p>Keep clear, readable copies of the following documents ready to upload:</p>
+                <ul>
+                    <li>Passport-size photograph</li>
+                    <li>Student signature (JPG or PNG)</li>
+                    <li>Identity proof</li>
+                    <li>10th certificate</li>
+                    <li>12th certificate</li>
+                    <li>Conduct certificate</li>
+                    <li>Transfer certificate</li>
+                    <li>Caste certificate for SC/ST applicants</li>
+                    <li>Previous academic records</li>
+                    <li>Other required certificates</li>
+                </ul>
+            </article>
+
+            <article class="admission-info-card">
+                <span class="admission-info-icon" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="3"/><path d="M24 21v12M24 14h.1" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>
+                </span>
+                <h3>Important Instructions</h3>
+                <ul>
+                    <li>Enter correct and complete information.</li>
+                    <li>Upload clear, readable documents.</li>
+                    <li>Review your details before submitting.</li>
+                    <li>Keep your application number safely.</li>
+                    <li>Applications cannot be edited after final submission unless permitted by an administrator.</li>
+                </ul>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="admission-apply admission-container" aria-labelledby="apply-title">
+    <div class="admission-apply-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="none"><path d="M8 14h32v27H8zM14 14V9h20v5M16 24h16M16 31h11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="m31 34 4 4 8-10" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="admission-apply-copy">
+        <span class="admission-kicker">APPLICATIONS ARE OPEN</span>
+        <h2 id="apply-title">Ready to Apply?</h2>
+        <p>Start your online admission application today, then return to check your application status.</p>
+    </div>
+    <div class="admission-apply-actions">
+        {% if user.is_authenticated %}
+        <a class="admission-button admission-button-primary" href="{% url 'admission_application' %}">Continue to Application <span aria-hidden="true">&rarr;</span></a>
+        <a class="admission-secondary-link" href="{% url 'admission_dashboard' %}">Check application status</a>
+        {% else %}
+        <a class="admission-button admission-button-primary" href="{% url 'login' %}?next={% url 'admission_application' %}">Login &amp; Apply <span aria-hidden="true">&rarr;</span></a>
+        <a class="admission-secondary-link" href="{% url 'register' %}">New Student? Register</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

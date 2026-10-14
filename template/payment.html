@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Course Fee Payment{% endblock %}
+{% block meta_description %}Review your selected course fee and choose how to pay.{% endblock %}
+
+{% block content %}
+<section class="payment-page" aria-labelledby="payment-title">
+    <div class="payment-card">
+        <div class="payment-header">
+            <span class="student-login-form-kicker">COURSE FEE</span>
+            <h1 id="payment-title">Pay Your Course Fee</h1>
+            <p>Only the selected course fee is due. Admission registration has no separate charge.</p>
+        </div>
+
+        <dl class="payment-details">
+            <div><dt>Student</dt><dd>{{ request.user.get_full_name|default:request.user.get_username }}</dd></div>
+            <div><dt>Application number</dt><dd>{{ application.application_number }}</dd></div>
+            <div><dt>Institution</dt><dd>Online Student Admission</dd></div>
+            <div><dt>Selected course</dt><dd>{{ application.course.name }} ({{ application.course.code }})</dd></div>
+        </dl>
+
+        <div class="payment-summary" aria-label="Payment summary">
+            <div class="payment-line"><span>Course fee</span><strong>INR {{ course_fee|floatformat:2 }}</strong></div>
+            <div class="payment-line payment-total"><span>Total payable</span><strong>INR {{ course_fee|floatformat:2 }}</strong></div>
+            {% if payment %}<div class="payment-line"><span>Online payment status</span><strong>{{ payment.get_status_display }}</strong></div>{% endif %}
+        </div>
+
+        <div class="payment-section">
+            <h2>Choose how to pay</h2>
+            <section class="payment-choice payment-choice-online" aria-labelledby="online-payment-title">
+                <span class="payment-choice-label">SECURE ONLINE PAYMENT</span>
+                <h3 id="online-payment-title">Pay online</h3>
+                <p class="payment-note">Pay securely online using the methods available through Razorpay, such as UPI, cards, or net banking.</p>
+                {% if razorpay_key_id %}
+                <button type="button" class="payment-button" id="open-checkout">Continue to secure payment</button>
+                <p class="payment-help">Do not refresh or close this page while your payment is being verified.</p>
+                <form id="payment-start-form" class="d-none">
+                    {% csrf_token %}
+                </form>
+                <div id="payment-error" class="alert alert-warning mt-3 d-none" role="status">
+                    Checkout was closed or failed. Your payment is still pending; you can safely try again.
+                </div>
+                {% elif gateway_configured %}
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="start_online_payment">
+                    <button type="submit" class="payment-button">Pay online</button>
+                </form>
+                {% else %}
+                <p class="payment-help">Online payment is currently unavailable. You can pay directly at the college.</p>
+                {% endif %}
+            </section>
+
+            <section class="payment-choice payment-choice-direct" aria-labelledby="college-payment-title">
+                <span class="payment-choice-label">IN-PERSON PAYMENT</span>
+                <h3 id="college-payment-title">Pay directly at the college</h3>
+                <p>Visit the college admissions or fees office and provide your application number. Pay only the course fee shown above and keep the receipt issued by the college.</p>
+                <p class="payment-help">Direct payments are not recorded or verified in this website.</p>
+            </section>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% if razorpay_key_id %}
+{% block extra_js %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    (() => {
+        const openButton = document.getElementById("open-checkout");
+        const form = document.getElementById("payment-start-form");
+        const errorNotice = document.getElementById("payment-error");
+
+        const openCheckout = () => {
+            errorNotice.classList.add("d-none");
+            const checkout = new Razorpay({
+                key: "{{ razorpay_key_id|escapejs }}",
+                amount: "{{ payment_amount_paise }}",
+                currency: "INR",
+                name: "Online Student Admission",
+                description: "Course fee - {{ application.course.name|escapejs }}",
+                order_id: "{{ payment.gateway_order_id|escapejs }}",
+                method: { upi: true, card: true, netbanking: true, wallet: false, emi: false, paylater: false },
+                prefill: {
+                    name: "{{ request.user.get_full_name|escapejs }}",
+                    email: "{{ request.user.email|escapejs }}"
+                },
+                notes: { application_number: "{{ application.application_number|escapejs }}" },
+                handler: (result) => {
+                    const verifyForm = document.createElement("form");
+                    verifyForm.method = "post";
+                    verifyForm.action = window.location.href;
+                    const csrf = form.querySelector("[name=csrfmiddlewaretoken]").value;
+                    const values = {
+                        csrfmiddlewaretoken: csrf,
+                        action: "verify",
+                        razorpay_payment_id: result.razorpay_payment_id,
+                        razorpay_order_id: result.razorpay_order_id,
+                        razorpay_signature: result.razorpay_signature
+                    };
+                    Object.entries(values).forEach(([name, value]) => {
+                        const input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = name;
+                        input.value = value;
+                        verifyForm.appendChild(input);
+                    });
+                    document.body.appendChild(verifyForm);
+                    verifyForm.submit();
+                },
+                modal: { ondismiss: () => errorNotice.classList.remove("d-none") },
+                theme: { color: "#1769aa" }
+            });
+            checkout.on("payment.failed", () => errorNotice.classList.remove("d-none"));
+            checkout.open();
+        };
+
+        openButton.addEventListener("click", openCheckout);
+        openCheckout();
+    })();
+</script>
+{% endblock %}
+{% endif %}
